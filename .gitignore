@@ -15,9 +15,6 @@ out/
 dist/
 
 # Maven
-.mvn/
-mvnw
-mvnw.cmd
 .m2/
 
 # OS
