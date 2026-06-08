@@ -12,6 +12,11 @@ spring:
               predicates:
                 - Path=/auth/**
 
+            - id: campaign-service
+              uri: lb://CAMPAIGN-SERVICE
+              predicates:
+                - Path=/campaign/**
+
 server:
   port: 8080
 
