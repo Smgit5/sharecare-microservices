@@ -2,6 +2,18 @@ spring:
   application:
     name: CAMPAIGN-SERVICE
 
+# DB properties - start
+  datasource:
+    username: postgres
+    password: smpostgres
+    url: jdbc:postgresql://localhost:5432/sharecare_campaign_db
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+# DB properties - end
+
 server:
   port: 8082
 
