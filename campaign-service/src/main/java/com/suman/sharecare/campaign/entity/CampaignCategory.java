@@ -11,6 +11,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CampaignCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
