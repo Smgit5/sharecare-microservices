@@ -1,11 +1,11 @@
 package com.suman.sharecare.campaign.repository;
 
-import com.suman.sharecare.campaign.entity.CampaignCategory;
+import com.suman.sharecare.campaign.entity.CampaignStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface CampaignCategoryRepository extends JpaRepository<CampaignCategory, UUID> {
+public interface StatusRepository extends JpaRepository<CampaignStatus, UUID> {
 }

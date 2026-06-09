@@ -3,8 +3,8 @@ package com.suman.sharecare.campaign.utility;
 import com.suman.sharecare.campaign.entity.CampaignCategory;
 import com.suman.sharecare.campaign.entity.CampaignStatus;
 import com.suman.sharecare.campaign.entity.Location;
-import com.suman.sharecare.campaign.repository.CampaignCategoryRepository;
-import com.suman.sharecare.campaign.repository.CampaignStatusRepository;
+import com.suman.sharecare.campaign.repository.CategoryRepository;
+import com.suman.sharecare.campaign.repository.StatusRepository;
 import com.suman.sharecare.campaign.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
 
-    private final CampaignStatusRepository statusRepository;
-    private final CampaignCategoryRepository categoryRepository;
+    private final StatusRepository statusRepository;
+    private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
     @Override
