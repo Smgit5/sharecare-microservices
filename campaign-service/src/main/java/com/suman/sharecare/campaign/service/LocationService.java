@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +19,9 @@ public class LocationService {
     public List<LocationResponseDto> getAllLocation() {
         List<Location> locations = locationRepository.findAll();
         return locations.stream().map(locationMapper::toDto).toList();
+    }
+
+    public Location getLocationById(UUID id) {
+        return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found!"));
     }
 }
