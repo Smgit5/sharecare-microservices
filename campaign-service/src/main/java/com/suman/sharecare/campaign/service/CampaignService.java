@@ -34,7 +34,7 @@ public class CampaignService {
     public CampaignResponseDto createCampaign(CampaignRequestDto campaignRequestDto) {
         Campaign campaign = campaignMapper.toEntity(campaignRequestDto);
         campaign.setCreatedByUserId(TEST_USER_ID);
-        campaign.setStatus(statusService.getDefaultStatus());
+        campaign.setStatus(statusService.getStatusByName(StatusService.PENDING_APPROVAL));
         campaign.setCategory(categoryService.getCategoryById(campaignRequestDto.getCategoryId()));
         campaign.setLocation(locationService.getLocationById(campaignRequestDto.getLocationId()));
         return campaignMapper.toDto(campaignRepository.save(campaign));
@@ -51,7 +51,7 @@ public class CampaignService {
         return campaignMapper.toDto(campaign);
     }
 
-    public CampaignResponseDto updateCampaign(UUID campaignId, @Valid CampaignRequestDto campaignRequestDto) {
+    public CampaignResponseDto updateCampaign(UUID campaignId, CampaignRequestDto campaignRequestDto) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign Not found"));
         campaignMapper.dtoToEntity(campaignRequestDto, existingCampaign);
         CampaignCategory updatedCategory = categoryService.getCategoryById(campaignRequestDto.getCategoryId());
@@ -63,13 +63,13 @@ public class CampaignService {
 
     public CampaignResponseDto approveCampaign(UUID campaignId) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
-        existingCampaign.setStatus(statusService.getStatusById(StatusService.ACTIVE_STATUS_ID));
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.ACTIVE));
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 
     public CampaignResponseDto rejectCampaign(UUID campaignId) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
-        existingCampaign.setStatus(statusService.getStatusById(StatusService.REJECT_STATUS_ID));
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.REJECTED));
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 

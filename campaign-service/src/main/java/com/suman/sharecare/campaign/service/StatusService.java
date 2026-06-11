@@ -14,9 +14,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class StatusService {
-    private static final UUID DEFAULT_STATUS_ID = UUID.fromString("bbba17f4-c776-4a06-b7b0-ea3039e7b672");
-    public static final UUID ACTIVE_STATUS_ID = UUID.fromString("ea1276b9-4f4c-44f3-b316-4e1594090d44");
-    public static final UUID REJECT_STATUS_ID = UUID.fromString("4b95e7ca-9880-4b26-9c72-ea5c60fcea01");
+    public static final String PENDING_APPROVAL = "PENDING_APPROVAL";
+    public static final String ACTIVE = "ACTIVE";
+    public static final String REJECTED = "REJECTED";
+    public static final String CLOSED = "CLOSED";
+    public static final String FULLY_FUNDED = "FULLY_FUNDED";
     private final StatusRepository statusRepository;
     private final StatusMapper statusMapper;
 
@@ -25,11 +27,7 @@ public class StatusService {
         return campaignStatusList.stream().map(statusMapper::toDto).toList();
     }
 
-    public CampaignStatus getDefaultStatus() {
-        return statusRepository.findById(DEFAULT_STATUS_ID).orElseThrow(() -> new ResourceNotFoundException("Status not found!"));
-    }
-
-    public CampaignStatus getStatusById(UUID statusId) {
-        return statusRepository.findById(statusId).orElseThrow(() -> new ResourceNotFoundException("Status not found!"));
+    public CampaignStatus getStatusByName(String status) {
+        return statusRepository.findByName(status).orElseThrow(() -> new ResourceNotFoundException("Status not found!"));
     }
 }
