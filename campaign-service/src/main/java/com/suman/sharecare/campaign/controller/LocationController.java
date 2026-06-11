@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/campaign/location")
+@RequestMapping("/campaigns/location")
 @RequiredArgsConstructor
 public class LocationController {
     private final LocationService locationService;

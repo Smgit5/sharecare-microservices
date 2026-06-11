@@ -15,7 +15,7 @@ spring:
             - id: campaign-service
               uri: lb://CAMPAIGN-SERVICE
               predicates:
-                - Path=/campaign/**
+                - Path=/campaigns/**
 
 server:
   port: 8080

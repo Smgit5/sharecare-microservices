@@ -1,6 +1,6 @@
 package com.suman.sharecare.campaign.exception;
 
-import com.suman.sharecare.campaign.dto.ErrorDtos.ErrorResponseDto;
+import com.suman.sharecare.campaign.dto.PageDtos.ApiResponseDto;
 import com.suman.sharecare.campaign.dto.ErrorDtos.ValidationErrorResponseDto;
 import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +19,11 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<ApiResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
         log.error("Inside GlobalExceptionHandler :: handleResourceNotFoundException : ", ex);
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return ResponseEntity.status(errorResponseDto.getStatus()).body(errorResponseDto);
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -41,10 +41,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleUnknownException(Exception ex) {
+    public ResponseEntity<ApiResponseDto> handleUnknownException(Exception ex) {
         log.error("Inside GlobalExceptionHandler :: handleUnknownException : ", ex);
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong!");
-        return ResponseEntity.internalServerError().body(errorResponseDto);
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong!");
+        return ResponseEntity.internalServerError().body(apiResponseDto);
     }
 }

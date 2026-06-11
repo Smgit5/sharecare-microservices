@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/campaign/status")
+@RequestMapping("/campaigns/status")
 public class StatusController {
     private final StatusService statusService;
 
