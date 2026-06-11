@@ -2,6 +2,7 @@ package com.suman.sharecare.campaign.service;
 
 import com.suman.sharecare.campaign.dto.category_dtos.CategoryResponseDto;
 import com.suman.sharecare.campaign.entity.CampaignCategory;
+import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.CategoryRepository;
 import com.suman.sharecare.campaign.utility.CategoryMapper;
 import jdk.jfr.Category;
@@ -23,6 +24,6 @@ public class CategoryService {
     }
 
     public CampaignCategory getCategoryById(UUID id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
 }

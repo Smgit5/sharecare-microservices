@@ -2,6 +2,7 @@ package com.suman.sharecare.campaign.service;
 
 import com.suman.sharecare.campaign.dto.status_dtos.StatusResponseDto;
 import com.suman.sharecare.campaign.entity.CampaignStatus;
+import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.StatusRepository;
 import com.suman.sharecare.campaign.utility.StatusMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,6 @@ public class StatusService {
     }
 
     public CampaignStatus getDefaultStatus() {
-        return statusRepository.findById(DEFAULT_STATUS_ID).orElseThrow(() -> new RuntimeException("Status not found!"));
+        return statusRepository.findById(DEFAULT_STATUS_ID).orElseThrow(() -> new ResourceNotFoundException("Status not found!"));
     }
 }

@@ -2,6 +2,7 @@ package com.suman.sharecare.campaign.service;
 
 import com.suman.sharecare.campaign.dto.location_dtos.LocationResponseDto;
 import com.suman.sharecare.campaign.entity.Location;
+import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.LocationRepository;
 import com.suman.sharecare.campaign.utility.LocationMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,6 @@ public class LocationService {
     }
 
     public Location getLocationById(UUID id) {
-        return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found!"));
+        return locationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Location not found!"));
     }
 }

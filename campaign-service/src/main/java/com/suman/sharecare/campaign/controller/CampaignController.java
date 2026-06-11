@@ -4,6 +4,7 @@ import com.suman.sharecare.campaign.dto.PageDtos.PageResponseDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignResponseDto;
 import com.suman.sharecare.campaign.service.CampaignService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public class CampaignController {
     private final CampaignService campaignService;
 
     @PostMapping
-    public ResponseEntity<CampaignResponseDto> createCampaign(@RequestBody CampaignRequestDto campaignRequestDto) {
+    public ResponseEntity<CampaignResponseDto> createCampaign(@Valid @RequestBody CampaignRequestDto campaignRequestDto) {
         return ResponseEntity.ok(campaignService.createCampaign(campaignRequestDto));
     }
 

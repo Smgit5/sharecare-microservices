@@ -4,6 +4,7 @@ import com.suman.sharecare.campaign.dto.PageDtos.PageResponseDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignResponseDto;
 import com.suman.sharecare.campaign.entity.Campaign;
+import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.CampaignRepository;
 import com.suman.sharecare.campaign.utility.CampaignMapper;
 import com.suman.sharecare.campaign.utility.PageMapper;
@@ -40,7 +41,7 @@ public class CampaignService {
     }
 
     public CampaignResponseDto getCampaignById(UUID campaignId) {
-        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new RuntimeException("Campaign not found!"));
+        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
         return campaignMapper.toDto(campaign);
     }
 }
