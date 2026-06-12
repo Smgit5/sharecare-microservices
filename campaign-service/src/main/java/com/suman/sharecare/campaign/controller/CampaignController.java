@@ -22,31 +22,36 @@ import java.util.UUID;
 public class CampaignController {
     private final CampaignService campaignService;
 
-    @PostMapping("/ngo-rep")
+    // NGO_REP APIs - start
+    @PostMapping
     public ResponseEntity<CampaignResponseDto> createCampaign(@Valid @RequestBody CampaignRequestDto campaignRequestDto) {
         return ResponseEntity.ok(campaignService.createCampaign(campaignRequestDto));
     }
 
-    @PutMapping("/{campaignId}/ngo-rep")
+    @PutMapping("/{campaignId}")
     public ResponseEntity<CampaignResponseDto> updateCampaign(@PathVariable UUID campaignId, @Valid @RequestBody CampaignRequestDto campaignRequestDto) {
         return ResponseEntity.ok(campaignService.updateCampaign(campaignId, campaignRequestDto));
     }
 
-    @DeleteMapping("/{campaignId}/ngo-rep")
+    @DeleteMapping("/{campaignId}")
     public ResponseEntity<ApiResponseDto> deleteCampaign(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.deleteCampaign(campaignId));
     }
+    // NGO_REP APIs - end
 
-    @PatchMapping("/{campaignId}/admin/approve")
+    // ADMIN APIs - start
+    @PatchMapping("/{campaignId}/approve")
     public ResponseEntity<CampaignResponseDto> approveCampaign(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.approveCampaign(campaignId));
     }
 
-    @PatchMapping("/{campaignId}/admin/reject")
+    @PatchMapping("/{campaignId}/reject")
     public ResponseEntity<CampaignResponseDto> rejectCampaign(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.rejectCampaign(campaignId));
     }
+    // ADMIN APIs - end
 
+    // CITIZEN APIs - start
     @GetMapping
     public ResponseEntity<PageResponseDto<CampaignResponseDto>> getCampaigns(
             @ParameterObject
@@ -60,4 +65,5 @@ public class CampaignController {
     public ResponseEntity<CampaignResponseDto> getCampaignById(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.getCampaignById(campaignId));
     }
+    // CITIZEN APIs - end
 }
