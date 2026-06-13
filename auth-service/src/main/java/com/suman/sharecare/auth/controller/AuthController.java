@@ -1,5 +1,6 @@
 package com.suman.sharecare.auth.controller;
 
+import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.UserRegisterRequestDto;
 import com.suman.sharecare.auth.service.UserService;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<String> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
+    public ResponseEntity<ApiResponseDto> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(userRegisterRequestDto));
     }
 }
