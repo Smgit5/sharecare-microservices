@@ -24,8 +24,8 @@ public class CampaignController {
 
     // NGO_REP APIs - start
     @PostMapping
-    public ResponseEntity<CampaignResponseDto> createCampaign(@Valid @RequestBody CampaignRequestDto campaignRequestDto) {
-        return ResponseEntity.ok(campaignService.createCampaign(campaignRequestDto));
+    public ResponseEntity<CampaignResponseDto> createCampaign(@RequestHeader("X-User-Id") String userId, @Valid @RequestBody CampaignRequestDto campaignRequestDto) {
+        return ResponseEntity.ok(campaignService.createCampaign(userId, campaignRequestDto));
     }
 
     @PutMapping("/{campaignId}")

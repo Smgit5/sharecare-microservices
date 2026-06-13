@@ -24,16 +24,15 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CampaignService {
-    private static final UUID TEST_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private final CampaignRepository campaignRepository;
     private final CampaignMapper campaignMapper;
     private final StatusService statusService;
     private final CategoryService categoryService;
     private final LocationService locationService;
 
-    public CampaignResponseDto createCampaign(CampaignRequestDto campaignRequestDto) {
+    public CampaignResponseDto createCampaign(String userId, CampaignRequestDto campaignRequestDto) {
         Campaign campaign = campaignMapper.toEntity(campaignRequestDto);
-        campaign.setCreatedByUserId(TEST_USER_ID);
+        campaign.setCreatedByUserId(UUID.fromString(userId));
         campaign.setStatus(statusService.getStatusByName(StatusService.PENDING_APPROVAL));
         campaign.setCategory(categoryService.getCategoryById(campaignRequestDto.getCategoryId()));
         campaign.setLocation(locationService.getLocationById(campaignRequestDto.getLocationId()));

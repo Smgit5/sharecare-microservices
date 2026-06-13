@@ -19,7 +19,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(username)
                 .claim("role", role)
-                .claim("userId", userId)
+                .claim("userId", userId.toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 20*60*1000)) // 20 minutes
                 .signWith(getSigningKey())
