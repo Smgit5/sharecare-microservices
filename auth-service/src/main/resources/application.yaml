@@ -21,3 +21,8 @@ eureka:
   client:
     service-url:
       defaultzone: http://localhost:8761/eureka
+
+# JWT properties - start
+jwt:
+  secret: oeDqIxwilT62HLEmsQYvBUU36XNlY18yg_UnKZDvsmU
+# JWT properties - end
