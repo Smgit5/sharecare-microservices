@@ -51,7 +51,7 @@ public class CampaignController {
     }
     // ADMIN APIs - end
 
-    // CITIZEN APIs - start
+    // Public APIs - start
     @GetMapping
     public ResponseEntity<PageResponseDto<CampaignResponseDto>> getCampaigns(
             @ParameterObject
@@ -65,5 +65,5 @@ public class CampaignController {
     public ResponseEntity<CampaignResponseDto> getCampaignById(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.getCampaignById(campaignId));
     }
-    // CITIZEN APIs - end
+    // Public APIs - end
 }

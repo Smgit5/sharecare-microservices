@@ -29,6 +29,10 @@ public class SecurityConfig {
                     auth -> auth
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/campaigns").hasRole("NGO_REP")
+                            .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole("NGO_REP")
+                            .requestMatchers(HttpMethod.DELETE, "/campaigns/**").hasRole("NGO_REP")
+                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject").hasRole("ADMIN")
                             .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
