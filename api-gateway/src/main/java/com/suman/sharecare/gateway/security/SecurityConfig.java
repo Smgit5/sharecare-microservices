@@ -34,12 +34,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                     auth -> auth
-                            .requestMatchers("/auth/register", "/auth/login").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.POST, "/campaigns").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.DELETE, "/campaigns/**").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject").hasRole("ADMIN")
+                            .requestMatchers("/auth/register", "/auth/login").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

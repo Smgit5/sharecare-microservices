@@ -29,13 +29,23 @@ public class CampaignController {
     }
 
     @PutMapping("/{campaignId}")
-    public ResponseEntity<CampaignResponseDto> updateCampaign(@PathVariable UUID campaignId, @Valid @RequestBody CampaignRequestDto campaignRequestDto) {
-        return ResponseEntity.ok(campaignService.updateCampaign(campaignId, campaignRequestDto));
+    public ResponseEntity<CampaignResponseDto> updateCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId, @Valid @RequestBody CampaignRequestDto campaignRequestDto) {
+        return ResponseEntity.ok(campaignService.updateCampaign(campaignId, userId, campaignRequestDto));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<PageResponseDto<CampaignResponseDto>> getMyCampaigns(
+            @RequestHeader("X-User-Id") String userId,
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(campaignService.getMyCampaigns(userId, pageable));
     }
 
     @DeleteMapping("/{campaignId}")
-    public ResponseEntity<ApiResponseDto> deleteCampaign(@PathVariable UUID campaignId) {
-        return ResponseEntity.ok(campaignService.deleteCampaign(campaignId));
+    public ResponseEntity<ApiResponseDto> deleteCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId) {
+        return ResponseEntity.ok(campaignService.deleteCampaign(campaignId, userId));
     }
     // NGO_REP APIs - end
 

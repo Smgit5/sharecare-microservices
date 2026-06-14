@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -50,8 +51,8 @@ public class CampaignService {
         return campaignMapper.toDto(campaign);
     }
 
-    public CampaignResponseDto updateCampaign(UUID campaignId, CampaignRequestDto campaignRequestDto) {
-        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign Not found"));
+    public CampaignResponseDto updateCampaign(UUID campaignId, String userId, CampaignRequestDto campaignRequestDto) {
+        Campaign existingCampaign = campaignRepository.findByIdAndCreatedByUserId(campaignId, UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("Campaign Not found"));
         campaignMapper.dtoToEntity(campaignRequestDto, existingCampaign);
         CampaignCategory updatedCategory = categoryService.getCategoryById(campaignRequestDto.getCategoryId());
         Location updatedLocation = locationService.getLocationById(campaignRequestDto.getLocationId());
@@ -72,9 +73,15 @@ public class CampaignService {
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 
-    public ApiResponseDto deleteCampaign(UUID campaignId) {
-        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+    public ApiResponseDto deleteCampaign(UUID campaignId, String userId) {
+        Campaign existingCampaign = campaignRepository.findByIdAndCreatedByUserId(campaignId, UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
         campaignRepository.delete(existingCampaign);
         return new ApiResponseDto(HttpStatus.OK.value(), "Selected campaign has been deleted.");
+    }
+
+    public PageResponseDto<CampaignResponseDto> getMyCampaigns(String userId, Pageable pageable) {
+        Page<Campaign> campaigns = campaignRepository.findByCreatedByUserId(UUID.fromString(userId), pageable);
+        Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);
+        return PageMapper.toDto(campaignResponseDtos);
     }
 }

@@ -21,10 +21,11 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("Inside JwtAccessDeniedHandler :: handle, error = {}", accessDeniedException.getMessage());
+        log.warn("Inside JwtAccessDeniedHandler :: handle, error = {}", accessDeniedException.getMessage());
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.FORBIDDEN.value(), "You don't have permission to access this page.");
         String json = objectMapper.writeValueAsString(apiResponseDto);
         response.getWriter().write(json);
