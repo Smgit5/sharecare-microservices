@@ -18,29 +18,40 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
+    private void seedStatus(String status) {
+        if(!statusRepository.existsByName(status)) {
+            statusRepository.save(new CampaignStatus(status));
+        }
+    }
+    private void seedCategory(String category) {
+        if(!categoryRepository.existsByName(category)) {
+            categoryRepository.save(new CampaignCategory(category));
+        }
+    }
+    private void seedLocation(String city, String district, String state) {
+        if(!locationRepository.existsByCityAndDistrictAndState(city, district, state)) {
+            locationRepository.save(new Location(city, district, state, null));
+        }
+    }
+
     @Override
     public void run(String... args) {
-        if (statusRepository.count() == 0) {
-            statusRepository.save(new CampaignStatus("PENDING_APPROVAL"));
-            statusRepository.save(new CampaignStatus("ACTIVE"));
-            statusRepository.save(new CampaignStatus("FULLY_FUNDED"));
-            statusRepository.save(new CampaignStatus("REJECTED"));
-            statusRepository.save(new CampaignStatus("CLOSED"));
-        }
+        seedStatus("PENDING_APPROVAL");
+        seedStatus("ACTIVE");
+        seedStatus("FULLY_FUNDED");
+        seedStatus("REJECTED");
+        seedStatus("CLOSED");
+        seedStatus("SENT_BACK");
 
-        if (categoryRepository.count() == 0) {
-            categoryRepository.save(new CampaignCategory("MEDICAL"));
-            categoryRepository.save(new CampaignCategory("DISASTER_RELIEF"));
-            categoryRepository.save(new CampaignCategory("FOOD"));
-            categoryRepository.save(new CampaignCategory("EDUCATION"));
-            categoryRepository.save(new CampaignCategory("COMMUNITY_SUPPORT"));
-        }
+        seedCategory("MEDICAL");
+        seedCategory("DISASTER_RELIEF");
+        seedCategory("FOOD");
+        seedCategory("EDUCATION");
+        seedCategory("COMMUNITY_SUPPORT");
 
-        if (locationRepository.count() == 0) {
-            locationRepository.save(new Location("Bhubaneswar", "Khordha", "Odisha", null));
-            locationRepository.save(new Location("Balasore", "Balasore", "Odisha", null));
-            locationRepository.save(new Location("Puri", "Puri", "Odisha", null));
-            locationRepository.save(new Location("Cuttack", "Cuttack", "Odisha", null));
-        }
+        seedLocation("Bhubaneswar", "Khordha", "Odisha");
+        seedLocation("Balasore", "Balasore", "Odisha");
+        seedLocation("Puri", "Puri", "Odisha");
+        seedLocation("Cuttack", "Cuttack", "Odisha");
     }
 }

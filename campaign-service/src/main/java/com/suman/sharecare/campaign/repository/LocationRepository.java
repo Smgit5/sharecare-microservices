@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, UUID> {
+    boolean existsByCityAndDistrictAndState(String city, String district, String state);
 }
