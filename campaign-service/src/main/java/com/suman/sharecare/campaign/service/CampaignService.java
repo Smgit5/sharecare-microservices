@@ -8,12 +8,14 @@ import com.suman.sharecare.campaign.entity.Campaign;
 import com.suman.sharecare.campaign.entity.CampaignCategory;
 import com.suman.sharecare.campaign.entity.CampaignStatus;
 import com.suman.sharecare.campaign.entity.Location;
+import com.suman.sharecare.campaign.exception.ActionNotAllowedException;
 import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.CampaignRepository;
 import com.suman.sharecare.campaign.utility.CampaignMapper;
 import com.suman.sharecare.campaign.utility.PageMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CampaignService {
@@ -53,6 +56,9 @@ public class CampaignService {
 
     public CampaignResponseDto updateCampaign(UUID campaignId, String userId, CampaignRequestDto campaignRequestDto) {
         Campaign existingCampaign = campaignRepository.findByIdAndCreatedByUserId(campaignId, UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("Campaign Not found"));
+        if(!existingCampaign.getStatus().getName().equals(StatusService.SENT_BACK)) {
+            throw new ActionNotAllowedException("Only sent-back campaigns can be edited.");
+        }
         campaignMapper.dtoToEntity(campaignRequestDto, existingCampaign);
         CampaignCategory updatedCategory = categoryService.getCategoryById(campaignRequestDto.getCategoryId());
         Location updatedLocation = locationService.getLocationById(campaignRequestDto.getLocationId());
@@ -83,5 +89,11 @@ public class CampaignService {
         Page<Campaign> campaigns = campaignRepository.findByCreatedByUserId(UUID.fromString(userId), pageable);
         Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);
         return PageMapper.toDto(campaignResponseDtos);
+    }
+
+    public CampaignResponseDto sendBackCampaign(UUID campaignId) {
+        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.SENT_BACK));
+        return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 }

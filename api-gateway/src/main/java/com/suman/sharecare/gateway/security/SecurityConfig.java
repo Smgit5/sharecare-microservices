@@ -38,7 +38,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/campaigns").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole("NGO_REP")
                             .requestMatchers(HttpMethod.DELETE, "/campaigns/**").hasRole("NGO_REP")
-                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole("ADMIN")
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .anyRequest().authenticated()

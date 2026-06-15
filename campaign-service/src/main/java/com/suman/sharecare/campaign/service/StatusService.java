@@ -16,6 +16,7 @@ import java.util.UUID;
 public class StatusService {
     public static final String PENDING_APPROVAL = "PENDING_APPROVAL";
     public static final String ACTIVE = "ACTIVE";
+    public static final String SENT_BACK = "SENT_BACK";
     public static final String REJECTED = "REJECTED";
     public static final String CLOSED = "CLOSED";
     public static final String FULLY_FUNDED = "FULLY_FUNDED";

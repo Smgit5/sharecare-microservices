@@ -18,6 +18,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ActionNotAllowedException.class)
+    public ResponseEntity<ApiResponseDto> handleActionNotAllowedException(ActionNotAllowedException ex) {
+        log.warn("Inside GlobalExceptionHandler :: handleActionNotAllowedException, msg = {}", ex.getMessage());
+
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
         log.error("Inside GlobalExceptionHandler :: handleResourceNotFoundException : ", ex);

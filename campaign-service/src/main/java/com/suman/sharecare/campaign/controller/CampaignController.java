@@ -55,6 +55,11 @@ public class CampaignController {
         return ResponseEntity.ok(campaignService.approveCampaign(campaignId));
     }
 
+    @PatchMapping("/{campaignId}/send-back")
+    public ResponseEntity<CampaignResponseDto> sendBackCampaign(@PathVariable UUID campaignId) {
+        return ResponseEntity.ok(campaignService.sendBackCampaign(campaignId));
+    }
+
     @PatchMapping("/{campaignId}/reject")
     public ResponseEntity<CampaignResponseDto> rejectCampaign(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.rejectCampaign(campaignId));
