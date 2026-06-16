@@ -97,12 +97,6 @@ public class CampaignService {
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 
-    public ApiResponseDto deleteCampaign(UUID campaignId, String userId) {
-        Campaign existingCampaign = campaignRepository.findByIdAndCreatedByUserId(campaignId, UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
-        campaignRepository.delete(existingCampaign);
-        return new ApiResponseDto(HttpStatus.OK.value(), "Selected campaign has been deleted.");
-    }
-
     public PageResponseDto<CampaignResponseDto> getMyCampaigns(String userId, Pageable pageable) {
         Page<Campaign> campaigns = campaignRepository.findByCreatedByUserId(UUID.fromString(userId), pageable);
         Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);

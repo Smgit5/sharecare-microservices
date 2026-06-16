@@ -42,11 +42,6 @@ public class CampaignController {
     ) {
         return ResponseEntity.ok(campaignService.getMyCampaigns(userId, pageable));
     }
-
-    @DeleteMapping("/{campaignId}")
-    public ResponseEntity<ApiResponseDto> deleteCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId) {
-        return ResponseEntity.ok(campaignService.deleteCampaign(campaignId, userId));
-    }
     // NGO_REP APIs - end
 
     // ADMIN APIs - start
