@@ -8,6 +8,7 @@ import com.suman.sharecare.campaign.entity.Campaign;
 import com.suman.sharecare.campaign.entity.CampaignCategory;
 import com.suman.sharecare.campaign.entity.CampaignStatus;
 import com.suman.sharecare.campaign.entity.Location;
+import com.suman.sharecare.campaign.enums.UserRole;
 import com.suman.sharecare.campaign.exception.ActionNotAllowedException;
 import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.CampaignRepository;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,5 +107,17 @@ public class CampaignService {
         Page<Campaign> campaigns = campaignRepository.findByCreatedByUserId(UUID.fromString(userId), pageable);
         Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);
         return PageMapper.toDto(campaignResponseDtos);
+    }
+
+    public CampaignResponseDto closeCampaign(UUID campaignId, String userId, String role) {
+        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
+        if(!existingCampaign.getStatus().getName().equals(StatusService.ACTIVE)) {
+            throw new ActionNotAllowedException("This action can be performed only on active campaigns.");
+        }
+        if(UserRole.NGO_REP.name().equals(role) && !userId.equals(existingCampaign.getCreatedByUserId().toString())) {
+            throw new ResourceNotFoundException("Campaign not found!"); // for protecting ownership
+        }
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.CLOSED));
+        return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 }

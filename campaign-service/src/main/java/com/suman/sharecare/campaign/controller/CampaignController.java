@@ -66,6 +66,13 @@ public class CampaignController {
     }
     // ADMIN APIs - end
 
+    // Both NGO_REP (Ownership required) and ADMIN apis - start
+    @PatchMapping("/{campaignId}/close")
+    public ResponseEntity<CampaignResponseDto> closeCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String role) {
+        return ResponseEntity.ok(campaignService.closeCampaign(campaignId, userId, role));
+    }
+    // Both NGO_REP (Ownership required) and ADMIN apis - end
+
     // Public APIs - start
     @GetMapping
     public ResponseEntity<PageResponseDto<CampaignResponseDto>> getCampaigns(

@@ -1,5 +1,6 @@
 package com.suman.sharecare.gateway.security;
 
+import com.suman.sharecare.gateway.enums.UserRole;
 import com.suman.sharecare.gateway.exception.JwtAccessDeniedHandler;
 import com.suman.sharecare.gateway.exception.JwtAuthenticationEntryPoint;
 import com.suman.sharecare.gateway.security.jwt.JwtFilter;
@@ -34,11 +35,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                     auth -> auth
-                            .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole("NGO_REP")
-                            .requestMatchers(HttpMethod.POST, "/campaigns").hasRole("NGO_REP")
-                            .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole("NGO_REP")
-                            .requestMatchers(HttpMethod.DELETE, "/campaigns/**").hasRole("NGO_REP")
-                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole(UserRole.NGO_REP.name())
+                            .requestMatchers(HttpMethod.POST, "/campaigns").hasRole(UserRole.NGO_REP.name())
+                            .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole(UserRole.NGO_REP.name())
+                            .requestMatchers(HttpMethod.DELETE, "/campaigns/**").hasRole(UserRole.NGO_REP.name())
+                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole(UserRole.ADMIN.name())
+                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/close").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .anyRequest().authenticated()
