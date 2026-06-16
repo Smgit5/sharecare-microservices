@@ -60,6 +60,7 @@ public class CampaignService {
             throw new ActionNotAllowedException("Only sent-back campaigns can be edited.");
         }
         campaignMapper.dtoToEntity(campaignRequestDto, existingCampaign);
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.PENDING_APPROVAL));
         CampaignCategory updatedCategory = categoryService.getCategoryById(campaignRequestDto.getCategoryId());
         Location updatedLocation = locationService.getLocationById(campaignRequestDto.getLocationId());
         existingCampaign.setCategory(updatedCategory);
@@ -67,14 +68,29 @@ public class CampaignService {
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 
+    public CampaignResponseDto sendBackCampaign(UUID campaignId) {
+        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
+        if(!existingCampaign.getStatus().getName().equals(StatusService.PENDING_APPROVAL)) {
+            throw new ActionNotAllowedException("This action can be performed only on campaigns pending for approval.");
+        }
+        existingCampaign.setStatus(statusService.getStatusByName(StatusService.SENT_BACK));
+        return campaignMapper.toDto(campaignRepository.save(existingCampaign));
+    }
+
     public CampaignResponseDto approveCampaign(UUID campaignId) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+        if(!existingCampaign.getStatus().getName().equals(StatusService.PENDING_APPROVAL)) {
+            throw new ActionNotAllowedException("This action can be performed only on campaigns pending for approval.");
+        }
         existingCampaign.setStatus(statusService.getStatusByName(StatusService.ACTIVE));
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 
     public CampaignResponseDto rejectCampaign(UUID campaignId) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+        if(!existingCampaign.getStatus().getName().equals(StatusService.PENDING_APPROVAL)) {
+            throw new ActionNotAllowedException("This action can be performed only on campaigns pending for approval.");
+        }
         existingCampaign.setStatus(statusService.getStatusByName(StatusService.REJECTED));
         return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
@@ -89,11 +105,5 @@ public class CampaignService {
         Page<Campaign> campaigns = campaignRepository.findByCreatedByUserId(UUID.fromString(userId), pageable);
         Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);
         return PageMapper.toDto(campaignResponseDtos);
-    }
-
-    public CampaignResponseDto sendBackCampaign(UUID campaignId) {
-        Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
-        existingCampaign.setStatus(statusService.getStatusByName(StatusService.SENT_BACK));
-        return campaignMapper.toDto(campaignRepository.save(existingCampaign));
     }
 }
