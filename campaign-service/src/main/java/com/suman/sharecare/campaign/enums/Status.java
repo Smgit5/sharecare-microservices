@@ -1,6 +1,6 @@
 package com.suman.sharecare.campaign.enums;
 
-public enum CampaignStatus {
+public enum Status {
     PENDING_APPROVAL,
     ACTIVE,
     FULLY_FUNDED,

@@ -8,6 +8,7 @@ import com.suman.sharecare.campaign.service.CampaignService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -81,6 +82,17 @@ public class CampaignController {
     @GetMapping("/{campaignId}")
     public ResponseEntity<CampaignResponseDto> getCampaignById(@PathVariable UUID campaignId) {
         return ResponseEntity.ok(campaignService.getCampaignById(campaignId));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponseDto<CampaignResponseDto>> filterCampaigns(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String status,
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(campaignService.filterCampaign(category, status, pageable));
     }
     // Public APIs - end
 }

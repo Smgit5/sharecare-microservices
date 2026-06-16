@@ -1,6 +1,6 @@
 package com.suman.sharecare.campaign.enums;
 
-public enum UserRole {
+public enum Roles {
     CITIZEN,
     NGO_REP,
     ADMIN
