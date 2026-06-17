@@ -7,7 +7,7 @@ spring:
       server:
         webmvc:
           routes:
-            - id: auth-service-auth
+            - id: auth-service
               uri: lb://AUTH-SERVICE
               predicates:
                 - Path=/auth/**,/users/**
@@ -16,6 +16,11 @@ spring:
               uri: lb://CAMPAIGN-SERVICE
               predicates:
                 - Path=/campaigns/**
+
+            - id: donation-service
+              uri: lb://DONATION-SERVICE
+              predicates:
+                - Path=/donation/**
 
 server:
   port: 8080
