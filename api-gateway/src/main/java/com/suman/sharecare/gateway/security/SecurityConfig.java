@@ -43,7 +43,7 @@ public class SecurityConfig {
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/donation/test").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/donations/test").permitAll()
                             .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

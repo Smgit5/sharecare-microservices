@@ -20,7 +20,7 @@ spring:
             - id: donation-service
               uri: lb://DONATION-SERVICE
               predicates:
-                - Path=/donation/**
+                - Path=/donations/**
 
 server:
   port: 8080
