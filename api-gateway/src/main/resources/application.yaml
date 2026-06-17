@@ -7,10 +7,10 @@ spring:
       server:
         webmvc:
           routes:
-            - id: auth-service
+            - id: auth-service-auth
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/auth/**
+                - Path=/auth/**,/users/**
 
             - id: campaign-service
               uri: lb://CAMPAIGN-SERVICE
