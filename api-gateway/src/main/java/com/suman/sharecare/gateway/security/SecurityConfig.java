@@ -43,6 +43,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/close").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
+                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/raised-amount").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/donations/test").permitAll()
                             .anyRequest().authenticated()

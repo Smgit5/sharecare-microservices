@@ -9,6 +9,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class DonationRequestDto {
-    private UUID campaignId;
+    private String campaignId;
     private BigDecimal amount;
 }

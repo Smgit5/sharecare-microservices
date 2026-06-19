@@ -1,12 +1,15 @@
 package com.suman.sharecare.campaign.service;
 
 import com.suman.sharecare.campaign.dto.PageDtos.PageResponseDto;
+import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignAmountUpdateRequestDto;
+import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignDonationCheckResponseDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignResponseDto;
 import com.suman.sharecare.campaign.entity.Campaign;
 import com.suman.sharecare.campaign.entity.CampaignCategory;
 import com.suman.sharecare.campaign.entity.Location;
 import com.suman.sharecare.campaign.enums.Roles;
+import com.suman.sharecare.campaign.enums.Status;
 import com.suman.sharecare.campaign.exception.ActionNotAllowedException;
 import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundException;
 import com.suman.sharecare.campaign.repository.CampaignRepository;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -115,5 +119,23 @@ public class CampaignService {
         Page<Campaign> campaigns = campaignRepository.findByFilters(category, status, pageable);
         Page<CampaignResponseDto> campaignResponseDtos = campaigns.map(campaignMapper::toDto);
         return PageMapper.toDto(campaignResponseDtos);
+    }
+
+    public CampaignDonationCheckResponseDto checkIfDonationAllowed(String campaignId) {
+        Campaign campaign = campaignRepository.findById(UUID.fromString(campaignId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+        CampaignDonationCheckResponseDto donationCheckResponseDto = new CampaignDonationCheckResponseDto();
+        boolean isAllowed = Status.ACTIVE.name().equals(campaign.getStatus().getName());
+        donationCheckResponseDto.setDonationAllowed(isAllowed);
+        return donationCheckResponseDto;
+    }
+
+    public void updateRaisedAmount(String campaignId, CampaignAmountUpdateRequestDto amountUpdateRequestDto) {
+        Campaign campaign = campaignRepository.findById(UUID.fromString(campaignId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
+        if(!Status.ACTIVE.name().equals(campaign.getStatus().getName())) {
+            throw new ActionNotAllowedException("Donation is allowed only for active campaigns.");
+        }
+        BigDecimal raisedAmount = campaign.getRaisedAmount().add(amountUpdateRequestDto.getAmount());
+        campaign.setRaisedAmount(raisedAmount);
+        campaignRepository.save(campaign);
     }
 }

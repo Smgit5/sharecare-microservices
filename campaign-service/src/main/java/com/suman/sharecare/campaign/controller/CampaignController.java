@@ -2,10 +2,13 @@ package com.suman.sharecare.campaign.controller;
 
 import com.suman.sharecare.campaign.dto.PageDtos.ApiResponseDto;
 import com.suman.sharecare.campaign.dto.PageDtos.PageResponseDto;
+import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignAmountUpdateRequestDto;
+import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignDonationCheckResponseDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignResponseDto;
 import com.suman.sharecare.campaign.service.CampaignService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -95,4 +98,17 @@ public class CampaignController {
         return ResponseEntity.ok(campaignService.filterCampaign(category, status, pageable));
     }
     // Public APIs - end
+
+    // APIs needed for Donation-Service - start
+    @GetMapping("/{campaignId}/donation-check")
+    public ResponseEntity<CampaignDonationCheckResponseDto> checkIfDonationAllowed(@PathVariable String campaignId) {
+        return ResponseEntity.ok(campaignService.checkIfDonationAllowed(campaignId));
+    }
+
+    @PatchMapping("/{campaignId}/raised-amount")
+    public ResponseEntity<Void> updateRaisedAmount(@PathVariable String campaignId, @Valid @RequestBody CampaignAmountUpdateRequestDto amountUpdateRequestDto) {
+        campaignService.updateRaisedAmount(campaignId, amountUpdateRequestDto);
+        return ResponseEntity.ok().build();
+    }
+    // APIs needed for Donation-Service - end
 }
