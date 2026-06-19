@@ -4,16 +4,22 @@ import com.suman.sharecare.donation.config.CampaignClient;
 import com.suman.sharecare.donation.dto.DonationRequestDto;
 import com.suman.sharecare.donation.dto.DonationResponseDto;
 import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignDonationCheckResponseDto;
+import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.entity.Donation;
 import com.suman.sharecare.donation.entity.DonationStatus;
 import com.suman.sharecare.donation.enums.Status;
 import com.suman.sharecare.donation.exception.ActionNotAllowedException;
+import com.suman.sharecare.donation.exception.ResourceNotFoundException;
 import com.suman.sharecare.donation.repository.DonationRespository;
 import com.suman.sharecare.donation.repository.StatusRepository;
 import com.suman.sharecare.donation.util.DonationMapper;
+import com.suman.sharecare.donation.util.PageMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,5 +43,11 @@ public class DonationService {
         Donation savedDonation = donationRespository.save(donation);
         campaignClient.updateRaisedAmount(donationRequestDto.getCampaignId(), donationRequestDto.getAmount());
         return donationMapper.generateDto(savedDonation);
+    }
+
+    public PageResponseDto<DonationResponseDto> getDonationHistoryOfCitizen(String donorId, Pageable pageable) {
+        Page<Donation> donations = donationRespository.findAllByDonorId(UUID.fromString(donorId), pageable);
+        Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
+        return PageMapper.generateResponseDto(donationResponseDtos);
     }
 }

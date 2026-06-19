@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleResourceNotFoundException, error = {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
+
     @ExceptionHandler(ActionNotAllowedException.class)
     public ResponseEntity<ApiResponseDto> handleActionNotAllowedException(ActionNotAllowedException ex) {
         log.error("Inside GlobalExceptionHandler :: handleActionNotAllowedException, error = {}", ex.getMessage());
