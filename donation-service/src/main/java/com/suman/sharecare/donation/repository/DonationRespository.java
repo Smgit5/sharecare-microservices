@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface DonationRespository extends JpaRepository<Donation, UUID> {
     Page<Donation> findAllByDonorId(UUID donorId, Pageable pageable);
+    Page<Donation> findByCampaignId(UUID campaignId, Pageable pageable);
 }

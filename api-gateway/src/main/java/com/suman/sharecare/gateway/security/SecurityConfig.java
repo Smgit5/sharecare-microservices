@@ -35,6 +35,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                     auth -> auth
+                            .requestMatchers(HttpMethod.GET, "/donations/history/**").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers(HttpMethod.GET, "/donations/my").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.POST, "/donations").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole(UserRole.NGO_REP.name())
@@ -44,7 +45,6 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/close").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
-                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/raised-amount").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/donations/test").permitAll()
                             .anyRequest().authenticated()

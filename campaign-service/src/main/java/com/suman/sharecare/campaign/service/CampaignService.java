@@ -138,4 +138,9 @@ public class CampaignService {
         campaign.setRaisedAmount(raisedAmount);
         campaignRepository.save(campaign);
     }
+
+    public Boolean checkOwnership(String campaignId, String userId) {
+        Campaign campaign = campaignRepository.findById(UUID.fromString(campaignId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
+        return campaign.getCreatedByUserId().toString().equals(userId);
+    }
 }

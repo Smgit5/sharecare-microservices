@@ -32,4 +32,15 @@ public class DonationController {
     ) {
         return ResponseEntity.ok(donationService.getDonationHistoryOfCitizen(donorId, pageable));
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationHistoryOfCampaign(
+            @RequestParam String campaignId,
+            @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole,
+            @ParameterObject
+            @PageableDefault(sort = "donatedAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(donationService.getDonationHistoryOfCampaign(campaignId, userId, userRole, pageable));
+    }
 }

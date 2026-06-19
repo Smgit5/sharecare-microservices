@@ -33,4 +33,12 @@ public class CampaignClient {
             .retrieve()
             .toBodilessEntity();
     }
+
+    public Boolean checkOwnership(String campaignId, String userId) {
+        return restClientBuilder.build()
+                .get()
+                .uri("http://CAMPAIGN-SERVICE/campaigns/{campaignId}/ownership-check?userId={userId}", campaignId, userId)
+                .retrieve()
+                .body(Boolean.class);
+    }
 }

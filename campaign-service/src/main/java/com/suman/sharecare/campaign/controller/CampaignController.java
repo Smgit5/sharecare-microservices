@@ -110,5 +110,10 @@ public class CampaignController {
         campaignService.updateRaisedAmount(campaignId, amountUpdateRequestDto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{campaignId}/ownership-check")
+    public ResponseEntity<Boolean> checkOwnersip(@PathVariable String campaignId, @RequestParam String userId) {
+        return ResponseEntity.ok(campaignService.checkOwnership(campaignId, userId));
+    }
     // APIs needed for Donation-Service - end
 }

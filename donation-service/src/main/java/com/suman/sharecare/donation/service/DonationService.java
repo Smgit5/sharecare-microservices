@@ -50,4 +50,13 @@ public class DonationService {
         Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
         return PageMapper.generateResponseDto(donationResponseDtos);
     }
+
+    public PageResponseDto<DonationResponseDto> getDonationHistoryOfCampaign(String campaignId, String userId, String userRole, Pageable pageable) {
+        if(!"ADMIN".equals(userRole) && !campaignClient.checkOwnership(campaignId, userId)) {
+            throw new ResourceNotFoundException("Campaign not found!");
+        }
+        Page<Donation> donations = donationRespository.findByCampaignId(UUID.fromString(campaignId), pageable);
+        Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
+        return PageMapper.generateResponseDto(donationResponseDtos);
+    }
 }
