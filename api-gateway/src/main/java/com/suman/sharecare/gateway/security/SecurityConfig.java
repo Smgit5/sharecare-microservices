@@ -35,7 +35,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                     auth -> auth
-                            .requestMatchers(HttpMethod.GET, "/donations/history/**").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
+                            .requestMatchers(HttpMethod.GET, "/donations/campaign/*/history").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers(HttpMethod.GET, "/donations/my").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.POST, "/donations").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole(UserRole.NGO_REP.name())
