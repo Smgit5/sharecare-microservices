@@ -59,9 +59,12 @@ public class DonationService {
         return PageMapper.generateResponseDto(donationResponseDtos);
     }
 
-    public DonationStatisticsResponseDto getDonationStatistics(String campaignID) {
-        long totalDonations = donationRespository.countByCampaignId(UUID.fromString(campaignID));
-        BigDecimal totalAmount = donationRespository.sumAmountByCampaignId(UUID.fromString(campaignID));
+    public DonationStatisticsResponseDto getDonationStatistics(String campaignId, String userId, String userRole) {
+        if(!"ADMIN".equals(userRole) && !campaignClient.checkOwnership(campaignId, userId)) {
+            throw new ResourceNotFoundException("Campaign not found!");
+        }
+        long totalDonations = donationRespository.countByCampaignId(UUID.fromString(campaignId));
+        BigDecimal totalAmount = donationRespository.sumAmountByCampaignId(UUID.fromString(campaignId));
         return new DonationStatisticsResponseDto(totalDonations, totalAmount);
     }
 }

@@ -46,7 +46,7 @@ public class DonationController {
     }
 
     @GetMapping("/campaign/{campaignId}/stats")
-    public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignID) {
-        return ResponseEntity.ok(donationService.getDonationStatistics(campaignID));
+    public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
+        return ResponseEntity.ok(donationService.getDonationStatistics(campaignId, userId, userRole));
     }
 }

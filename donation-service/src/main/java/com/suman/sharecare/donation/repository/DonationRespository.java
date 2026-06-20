@@ -21,5 +21,5 @@ public interface DonationRespository extends JpaRepository<Donation, UUID> {
                             FROM Donation d
                             WHERE d.campaignId=:campaignId
 """)
-    BigDecimal sumAmountByCampaignId(UUID campignId);
+    BigDecimal sumAmountByCampaignId(UUID campaignId);
 }
