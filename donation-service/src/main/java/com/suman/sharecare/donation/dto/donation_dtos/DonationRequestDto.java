@@ -1,10 +1,9 @@
-package com.suman.sharecare.donation.dto;
+package com.suman.sharecare.donation.dto.donation_dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Getter
 @Setter

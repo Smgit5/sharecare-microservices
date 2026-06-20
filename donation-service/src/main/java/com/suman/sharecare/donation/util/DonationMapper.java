@@ -1,7 +1,7 @@
 package com.suman.sharecare.donation.util;
 
-import com.suman.sharecare.donation.dto.DonationRequestDto;
-import com.suman.sharecare.donation.dto.DonationResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
 import com.suman.sharecare.donation.entity.Donation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

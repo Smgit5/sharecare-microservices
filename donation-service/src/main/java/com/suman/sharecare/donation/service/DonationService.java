@@ -1,17 +1,16 @@
 package com.suman.sharecare.donation.service;
 
 import com.suman.sharecare.donation.config.CampaignClient;
-import com.suman.sharecare.donation.dto.DonationRequestDto;
-import com.suman.sharecare.donation.dto.DonationResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
 import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignDonationCheckResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationStatisticsResponseDto;
 import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.entity.Donation;
-import com.suman.sharecare.donation.entity.DonationStatus;
 import com.suman.sharecare.donation.enums.Status;
 import com.suman.sharecare.donation.exception.ActionNotAllowedException;
 import com.suman.sharecare.donation.exception.ResourceNotFoundException;
 import com.suman.sharecare.donation.repository.DonationRespository;
-import com.suman.sharecare.donation.repository.StatusRepository;
 import com.suman.sharecare.donation.util.DonationMapper;
 import com.suman.sharecare.donation.util.PageMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -58,5 +57,11 @@ public class DonationService {
         Page<Donation> donations = donationRespository.findByCampaignId(UUID.fromString(campaignId), pageable);
         Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
         return PageMapper.generateResponseDto(donationResponseDtos);
+    }
+
+    public DonationStatisticsResponseDto getDonationStatistics(String campaignID) {
+        long totalDonations = donationRespository.countByCampaignId(UUID.fromString(campaignID));
+        BigDecimal totalAmount = donationRespository.sumAmountByCampaignId(UUID.fromString(campaignID));
+        return new DonationStatisticsResponseDto(totalDonations, totalAmount);
     }
 }

@@ -1,7 +1,8 @@
 package com.suman.sharecare.donation.controller;
 
-import com.suman.sharecare.donation.dto.DonationRequestDto;
-import com.suman.sharecare.donation.dto.DonationResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.DonationStatisticsResponseDto;
 import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.service.DonationService;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,10 @@ public class DonationController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(donationService.getDonationHistoryOfCampaign(campaignId, userId, userRole, pageable));
+    }
+
+    @GetMapping("/campaign/{campaignId}/stats")
+    public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignID) {
+        return ResponseEntity.ok(donationService.getDonationStatistics(campaignID));
     }
 }

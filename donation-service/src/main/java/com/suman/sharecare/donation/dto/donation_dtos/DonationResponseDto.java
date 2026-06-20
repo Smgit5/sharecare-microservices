@@ -1,4 +1,4 @@
-package com.suman.sharecare.donation.dto;
+package com.suman.sharecare.donation.dto.donation_dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

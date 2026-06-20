@@ -135,6 +135,9 @@ public class CampaignService {
             throw new ActionNotAllowedException("Donation is allowed only for active campaigns.");
         }
         BigDecimal raisedAmount = campaign.getRaisedAmount().add(amountUpdateRequestDto.getAmount());
+        if(raisedAmount.compareTo(campaign.getTargetAmount()) >= 0) {
+            campaign.setStatus(statusService.getStatusByName(StatusService.FULLY_FUNDED));
+        }
         campaign.setRaisedAmount(raisedAmount);
         campaignRepository.save(campaign);
     }
