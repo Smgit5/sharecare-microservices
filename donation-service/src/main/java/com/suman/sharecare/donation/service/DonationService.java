@@ -67,4 +67,23 @@ public class DonationService {
         BigDecimal totalAmount = donationRespository.sumAmountByCampaignId(UUID.fromString(campaignId));
         return new DonationStatisticsResponseDto(totalDonations, totalAmount);
     }
+
+    public DonationResponseDto viewDonation(String donationId, String userId, String userRole) {
+        Donation donation = donationRespository.findById(UUID.fromString(donationId)).orElseThrow(() -> new ResourceNotFoundException("Donation not found!"));
+        if ("ADMIN".equals(userRole)) {
+            return donationMapper.generateDto(donation);
+        }
+
+        if ("CITIZEN".equals(userRole)
+                && userId.equals(donation.getDonorId().toString())) {
+            return donationMapper.generateDto(donation);
+        }
+
+        if ("NGO_REP".equals(userRole)
+                && campaignClient.checkOwnership(donation.getCampaignId().toString(), userId)) {
+            return donationMapper.generateDto(donation);
+        }
+
+        throw new ResourceNotFoundException("Donation not found!");
+    }
 }

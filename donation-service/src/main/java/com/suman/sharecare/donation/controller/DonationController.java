@@ -24,6 +24,13 @@ public class DonationController {
         return ResponseEntity.ok(donationService.donate(donationRequestDto, donorId));
     }
 
+    @GetMapping("/{donationId}")
+    public ResponseEntity<DonationResponseDto> viewDonation(@PathVariable String donationId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
+        return ResponseEntity.ok(donationService.viewDonation(donationId, userId, userRole));
+    }
+
+
+
     @GetMapping("/my")
     public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationHistoryOfCitizen(
             @RequestHeader("X-User-Id") String donorId,
