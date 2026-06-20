@@ -25,20 +25,18 @@ public class DonationController {
     }
 
     @GetMapping("/{donationId}")
-    public ResponseEntity<DonationResponseDto> viewDonation(@PathVariable String donationId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
-        return ResponseEntity.ok(donationService.viewDonation(donationId, userId, userRole));
+    public ResponseEntity<DonationResponseDto> getDonation(@PathVariable String donationId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
+        return ResponseEntity.ok(donationService.getDonation(donationId, userId, userRole));
     }
 
-
-
     @GetMapping("/my")
-    public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationHistoryOfCitizen(
+    public ResponseEntity<PageResponseDto<DonationResponseDto>> viewMyDonationHistory(
             @RequestHeader("X-User-Id") String donorId,
             @ParameterObject
             @PageableDefault(sort = "donatedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return ResponseEntity.ok(donationService.getDonationHistoryOfCitizen(donorId, pageable));
+        return ResponseEntity.ok(donationService.viewMyDonationHistory(donorId, pageable));
     }
 
     @GetMapping("/campaign/{campaignId}/history")
@@ -55,5 +53,15 @@ public class DonationController {
     @GetMapping("/campaign/{campaignId}/stats")
     public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
         return ResponseEntity.ok(donationService.getDonationStatistics(campaignId, userId, userRole));
+    }
+
+    @GetMapping("/my/campaign/{campaignId}/exists")
+    public ResponseEntity<Boolean> isAlreadyDonated(@PathVariable String campaignId, @RequestHeader("X-User-Id") String citizenId) {
+        return ResponseEntity.ok(donationService.isAlreadyDonated(campaignId, citizenId));
+    }
+
+    @GetMapping("/my/campaign/{campaignId}")
+    public ResponseEntity<PageResponseDto<DonationResponseDto>> viewMyDonationsToCampaign(@PathVariable String campaignId, @RequestHeader("X-User-Id") String citizenId, @ParameterObject @PageableDefault(sort = "donatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(donationService.viewMyDonationsToCampaign(campaignId, citizenId, pageable));
     }
 }

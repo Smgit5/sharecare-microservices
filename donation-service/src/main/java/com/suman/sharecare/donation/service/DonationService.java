@@ -44,7 +44,7 @@ public class DonationService {
         return donationMapper.generateDto(savedDonation);
     }
 
-    public PageResponseDto<DonationResponseDto> getDonationHistoryOfCitizen(String donorId, Pageable pageable) {
+    public PageResponseDto<DonationResponseDto> viewMyDonationHistory(String donorId, Pageable pageable) {
         Page<Donation> donations = donationRespository.findAllByDonorId(UUID.fromString(donorId), pageable);
         Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
         return PageMapper.generateResponseDto(donationResponseDtos);
@@ -68,7 +68,7 @@ public class DonationService {
         return new DonationStatisticsResponseDto(totalDonations, totalAmount);
     }
 
-    public DonationResponseDto viewDonation(String donationId, String userId, String userRole) {
+    public DonationResponseDto getDonation(String donationId, String userId, String userRole) {
         Donation donation = donationRespository.findById(UUID.fromString(donationId)).orElseThrow(() -> new ResourceNotFoundException("Donation not found!"));
         if ("ADMIN".equals(userRole)) {
             return donationMapper.generateDto(donation);
@@ -85,5 +85,15 @@ public class DonationService {
         }
 
         throw new ResourceNotFoundException("Donation not found!");
+    }
+
+    public Boolean isAlreadyDonated(String campaignId, String citizenId) {
+        return donationRespository.existsByCampaignIdAndDonorId(UUID.fromString(campaignId), UUID.fromString(citizenId));
+    }
+
+    public PageResponseDto<DonationResponseDto> viewMyDonationsToCampaign(String campaignId, String citizenId, Pageable pageable) {
+        Page<Donation> donations = donationRespository.findAllByCampaignIdAndDonorId(UUID.fromString(campaignId), UUID.fromString(citizenId), pageable);
+        Page<DonationResponseDto> donationResponseDtos = donations.map(donationMapper::generateDto);
+        return PageMapper.generateResponseDto(donationResponseDtos);
     }
 }
