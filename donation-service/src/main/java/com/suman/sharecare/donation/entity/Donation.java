@@ -38,6 +38,9 @@ public class Donation {
     @Column(nullable = false)
     private LocalDateTime donatedAt;
 
+    @Column(unique = true)
+    private String paymentReferenceId;
+
     @PrePersist
     public void onCreate() {
         this.donatedAt = LocalDateTime.now();

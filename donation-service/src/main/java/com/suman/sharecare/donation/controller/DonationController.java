@@ -1,10 +1,14 @@
 package com.suman.sharecare.donation.controller;
 
+import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignAmountUpdateRequestDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationStatisticsResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.PaymentStatusUpdateRequestDto;
+import com.suman.sharecare.donation.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.service.DonationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +26,11 @@ public class DonationController {
     @PostMapping
     public ResponseEntity<DonationResponseDto> donate(@RequestBody DonationRequestDto donationRequestDto, @RequestHeader("X-User-Id") String donorId) {
         return ResponseEntity.ok(donationService.donate(donationRequestDto, donorId));
+    }
+
+    @PatchMapping("/payment-status/{paymentReferenceId}")
+    public ResponseEntity<ApiResponseDto> checkPaymentStatus(@PathVariable String paymentReferenceId, @Valid @RequestBody PaymentStatusUpdateRequestDto paymentStatusUpdateRequestDto) {
+        return ResponseEntity.ok(donationService.checkPaymentStatus(paymentReferenceId, paymentStatusUpdateRequestDto));
     }
 
     @GetMapping("/{donationId}")

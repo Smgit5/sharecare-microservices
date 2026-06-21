@@ -1,6 +1,6 @@
 package com.suman.sharecare.donation.enums;
 
-public enum Status {
+public enum DonationStatusNames {
     SUCCESS,
     PENDING,
     FAILED

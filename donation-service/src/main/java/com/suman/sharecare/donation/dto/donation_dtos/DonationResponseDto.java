@@ -16,6 +16,7 @@ public class DonationResponseDto {
     private UUID donorId;
     private BigDecimal amount;
     private String status;
+    private String paymentReferenceId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime donatedAt;
