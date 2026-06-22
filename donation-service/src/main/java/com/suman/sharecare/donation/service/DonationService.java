@@ -134,7 +134,7 @@ public class DonationService {
                 return;
             } catch(HttpClientErrorException.Conflict ex) {
                 if(attempt == maxAttempt) {
-                    throw new ActionNotAllowedException("Payment processing is experiencing issue! Please try again later.");
+                    throw new ActionNotAllowedException("Payment was received, but donation processing is delayed. Please do not make another payment.");
                 }
             }
         }

@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ResponseEntity<ApiResponseDto> handleObjectOptimisticLockingFailureException(ObjectOptimisticLockingFailureException ex) {
         log.error("Inside GlobalExceptionHandler :: handleObjectOptimisticLockingFailureException, msg = {}", ex.getMessage());
-        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), "Payment processing is experiencing issue! Please try again later.");
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), "Payment was received, but donation processing is delayed. Please do not make another payment.");
         return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
     }
 
