@@ -16,18 +16,22 @@ import com.suman.sharecare.donation.repository.DonationRespository;
 import com.suman.sharecare.donation.util.DonationMapper;
 import com.suman.sharecare.donation.util.PageMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DonationService {
+    private static final int MAX_ATTEMPT_PAYMENT = 3;
     private final DonationRespository donationRespository;
     private final DonationMapper donationMapper;
     private final StatusService statusService;
@@ -112,13 +116,27 @@ public class DonationService {
             donationRespository.save(donation);
             return new ApiResponseDto(HttpStatus.OK.value(), "Payment failed! Donation could not be complete.");
         } else if(DonationStatusNames.SUCCESS.name().equals(normalizedStatus)) {
+            updateRaisedAmountWithRetry(donation.getCampaignId().toString(), donation.getAmount());
             donation.setStatus(statusService.getStatusByName(DonationStatusNames.SUCCESS.name()));
             donation.setPaidAt(LocalDateTime.now());
             donationRespository.save(donation);
-            campaignClient.updateRaisedAmount(donation.getCampaignId().toString(), donation.getAmount());
             return new ApiResponseDto(HttpStatus.OK.value(), "Payment successful! Donation complete.");
         } else {
             throw new ActionNotAllowedException("Invalid payment status.");
+        }
+    }
+
+    private void updateRaisedAmountWithRetry(String campaignId, BigDecimal amount) {
+        int maxAttempt = MAX_ATTEMPT_PAYMENT;
+        for(int attempt=1; attempt<=maxAttempt; attempt++) {
+            try {
+                campaignClient.updateRaisedAmount(campaignId, amount);
+                return;
+            } catch(HttpClientErrorException.Conflict ex) {
+                if(attempt == maxAttempt) {
+                    throw new ActionNotAllowedException("Payment processing is experiencing issue! Please try again later.");
+                }
+            }
         }
     }
 }
