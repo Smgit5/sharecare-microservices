@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -112,6 +113,7 @@ public class DonationService {
             return new ApiResponseDto(HttpStatus.OK.value(), "Payment failed! Donation could not be complete.");
         } else if(DonationStatusNames.SUCCESS.name().equals(normalizedStatus)) {
             donation.setStatus(statusService.getStatusByName(DonationStatusNames.SUCCESS.name()));
+            donation.setPaidAt(LocalDateTime.now());
             donationRespository.save(donation);
             campaignClient.updateRaisedAmount(donation.getCampaignId().toString(), donation.getAmount());
             return new ApiResponseDto(HttpStatus.OK.value(), "Payment successful! Donation complete.");

@@ -19,5 +19,8 @@ public class DonationResponseDto {
     private String paymentReferenceId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime donatedAt;
+    private LocalDateTime paymentInitiatedAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime paidAt;
 }

@@ -36,13 +36,15 @@ public class Donation {
     private DonationStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime donatedAt;
+    private LocalDateTime paymentInitiatedAt;
+
+    private LocalDateTime paidAt;
 
     @Column(unique = true)
     private String paymentReferenceId;
 
     @PrePersist
     public void onCreate() {
-        this.donatedAt = LocalDateTime.now();
+        this.paymentInitiatedAt = LocalDateTime.now();
     }
 }
