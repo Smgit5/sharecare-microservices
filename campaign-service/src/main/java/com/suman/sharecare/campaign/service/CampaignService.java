@@ -141,7 +141,6 @@ public class CampaignService {
             campaign.setStatus(statusService.getStatusByName(StatusService.FULLY_FUNDED));
         }
         campaign.setRaisedAmount(raisedAmount);
-        campaignRepository.save(campaign);
     }
 
     public Boolean checkOwnership(String campaignId, String userId) {

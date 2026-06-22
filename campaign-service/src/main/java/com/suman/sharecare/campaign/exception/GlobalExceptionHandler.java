@@ -6,6 +6,7 @@ import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundE
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,9 +19,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ApiResponseDto> handleObjectOptimisticLockingFailureException(ObjectOptimisticLockingFailureException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleObjectOptimisticLockingFailureException, msg = {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), "Payment processing is experiencing issue! Please try again later.");
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
+
     @ExceptionHandler(ActionNotAllowedException.class)
     public ResponseEntity<ApiResponseDto> handleActionNotAllowedException(ActionNotAllowedException ex) {
-        log.warn("Inside GlobalExceptionHandler :: handleActionNotAllowedException, msg = {}", ex.getMessage());
+        log.error("Inside GlobalExceptionHandler :: handleActionNotAllowedException, msg = {}", ex.getMessage());
 
         ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), ex.getMessage());
         return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
