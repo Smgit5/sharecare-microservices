@@ -53,6 +53,9 @@ public class Campaign {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
+    @Version
+    private Long version;
+
     @PrePersist
     public void onCreate() {
         this.raisedAmount = BigDecimal.ZERO;

@@ -15,6 +15,7 @@ import com.suman.sharecare.campaign.exception.custom_exception.ResourceNotFoundE
 import com.suman.sharecare.campaign.repository.CampaignRepository;
 import com.suman.sharecare.campaign.utility.CampaignMapper;
 import com.suman.sharecare.campaign.utility.PageMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -129,6 +130,7 @@ public class CampaignService {
         return donationCheckResponseDto;
     }
 
+    @Transactional
     public void updateRaisedAmount(String campaignId, CampaignAmountUpdateRequestDto amountUpdateRequestDto) {
         Campaign campaign = campaignRepository.findById(UUID.fromString(campaignId)).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
         if(!Status.ACTIVE.name().equals(campaign.getStatus().getName())) {
