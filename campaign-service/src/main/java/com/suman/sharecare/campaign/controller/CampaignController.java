@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -67,8 +68,8 @@ public class CampaignController {
 
     // Both NGO_REP (Ownership required) and ADMIN apis - start
     @PatchMapping("/{campaignId}/close")
-    public ResponseEntity<CampaignResponseDto> closeCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String role) {
-        return ResponseEntity.ok(campaignService.closeCampaign(campaignId, userId, role));
+    public ResponseEntity<CampaignResponseDto> closeCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String roles) {
+        return ResponseEntity.ok(campaignService.closeCampaign(campaignId, userId, roles));
     }
     // Both NGO_REP (Ownership required) and ADMIN apis - end
 

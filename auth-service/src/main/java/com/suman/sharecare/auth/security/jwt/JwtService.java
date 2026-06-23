@@ -1,5 +1,6 @@
 package com.suman.sharecare.auth.security.jwt;
 
+import com.suman.sharecare.auth.entity.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -9,16 +10,17 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
-    public String generateToken(String username, String role, UUID userId) {
+    public String generateToken(String username, Set<String> roles, UUID userId) {
         return Jwts.builder()
                 .subject(username)
-                .claim("role", role)
+                .claim("roles", roles)
                 .claim("userId", userId.toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 20*60*1000)) // 20 minutes

@@ -4,6 +4,7 @@ import com.suman.sharecare.auth.dto.role_dtos.RoleResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -11,5 +12,5 @@ import java.util.UUID;
 public class UserResponseDto {
     private UUID id;
     private String username;
-    private RoleResponseDto role;
+    private Set<RoleResponseDto> roles;
 }

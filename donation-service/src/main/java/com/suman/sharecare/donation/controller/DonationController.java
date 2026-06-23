@@ -34,15 +34,15 @@ public class DonationController {
     }
 
     @GetMapping("/{donationId}")
-    public ResponseEntity<DonationResponseDto> getDonation(@PathVariable String donationId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
-        return ResponseEntity.ok(donationService.getDonation(donationId, userId, userRole));
+    public ResponseEntity<DonationResponseDto> getDonation(@PathVariable String donationId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String userRoles) {
+        return ResponseEntity.ok(donationService.getDonation(donationId, userId, userRoles));
     }
 
     @GetMapping("/my")
     public ResponseEntity<PageResponseDto<DonationResponseDto>> viewMyDonationHistory(
             @RequestHeader("X-User-Id") String donorId,
             @ParameterObject
-            @PageableDefault(sort = "donatedAt", direction = Sort.Direction.DESC)
+            @PageableDefault(sort = "paymentInitiatedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         return ResponseEntity.ok(donationService.viewMyDonationHistory(donorId, pageable));
@@ -51,17 +51,17 @@ public class DonationController {
     @GetMapping("/campaign/{campaignId}/history")
     public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationHistoryOfCampaign(
             @PathVariable String campaignId,
-            @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole,
+            @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String userRoles,
             @ParameterObject
-            @PageableDefault(sort = "donatedAt", direction = Sort.Direction.DESC)
+            @PageableDefault(sort = "paymentInitiatedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return ResponseEntity.ok(donationService.getDonationHistoryOfCampaign(campaignId, userId, userRole, pageable));
+        return ResponseEntity.ok(donationService.getDonationHistoryOfCampaign(campaignId, userId, userRoles, pageable));
     }
 
     @GetMapping("/campaign/{campaignId}/stats")
-    public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
-        return ResponseEntity.ok(donationService.getDonationStatistics(campaignId, userId, userRole));
+    public ResponseEntity<DonationStatisticsResponseDto> getDonationStatistics(@PathVariable String campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String userRoles) {
+        return ResponseEntity.ok(donationService.getDonationStatistics(campaignId, userId, userRoles));
     }
 
     @GetMapping("/my/campaign/{campaignId}/exists")

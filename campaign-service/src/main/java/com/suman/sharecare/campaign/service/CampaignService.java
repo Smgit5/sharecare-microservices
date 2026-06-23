@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -102,12 +103,12 @@ public class CampaignService {
         return PageMapper.toDto(campaignResponseDtos);
     }
 
-    public CampaignResponseDto closeCampaign(UUID campaignId, String userId, String role) {
+    public CampaignResponseDto closeCampaign(UUID campaignId, String userId, String roles) {
         Campaign existingCampaign = campaignRepository.findById(campaignId).orElseThrow(() -> new ResourceNotFoundException("Campaign not found!"));
         if(!existingCampaign.getStatus().getName().equals(StatusService.ACTIVE)) {
             throw new ActionNotAllowedException("This action can be performed only on active campaigns.");
         }
-        if(Roles.NGO_REP.name().equals(role) && !userId.equals(existingCampaign.getCreatedByUserId().toString())) {
+        if(roles.contains("NGO_REP") && !userId.equals(existingCampaign.getCreatedByUserId().toString())) {
             throw new ResourceNotFoundException("Campaign not found!"); // for protecting ownership
         }
         existingCampaign.setStatus(statusService.getStatusByName(StatusService.CLOSED));

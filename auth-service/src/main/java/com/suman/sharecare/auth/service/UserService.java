@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -29,7 +30,7 @@ public class UserService {
         User user = userMapper.toEntity(userRegisterRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleService.getRoleByName(RoleService.CITIZEN);
-        user.setRole(role);
+        user.setRoles(Set.of(role));
         userRepository.save(user);
         return new ApiResponseDto(HttpStatus.CREATED.value(), "User saved.");
     }

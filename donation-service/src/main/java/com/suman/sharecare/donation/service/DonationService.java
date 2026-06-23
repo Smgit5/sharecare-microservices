@@ -58,8 +58,8 @@ public class DonationService {
         return PageMapper.generateResponseDto(donationResponseDtos);
     }
 
-    public PageResponseDto<DonationResponseDto> getDonationHistoryOfCampaign(String campaignId, String userId, String userRole, Pageable pageable) {
-        if(!"ADMIN".equals(userRole) && !campaignClient.checkOwnership(campaignId, userId)) {
+    public PageResponseDto<DonationResponseDto> getDonationHistoryOfCampaign(String campaignId, String userId, String userRoles, Pageable pageable) {
+        if(!userRoles.contains("ADMIN") && !campaignClient.checkOwnership(campaignId, userId)) {
             throw new ResourceNotFoundException("Campaign not found!");
         }
         Page<Donation> donations = donationRespository.findByCampaignId(UUID.fromString(campaignId), pageable);
@@ -67,8 +67,8 @@ public class DonationService {
         return PageMapper.generateResponseDto(donationResponseDtos);
     }
 
-    public DonationStatisticsResponseDto getDonationStatistics(String campaignId, String userId, String userRole) {
-        if(!"ADMIN".equals(userRole) && !campaignClient.checkOwnership(campaignId, userId)) {
+    public DonationStatisticsResponseDto getDonationStatistics(String campaignId, String userId, String userRoles) {
+        if(!userRoles.contains("ADMIN") && !campaignClient.checkOwnership(campaignId, userId)) {
             throw new ResourceNotFoundException("Campaign not found!");
         }
         long totalDonations = donationRespository.countByCampaignId(UUID.fromString(campaignId));
@@ -76,18 +76,18 @@ public class DonationService {
         return new DonationStatisticsResponseDto(totalDonations, totalAmount);
     }
 
-    public DonationResponseDto getDonation(String donationId, String userId, String userRole) {
+    public DonationResponseDto getDonation(String donationId, String userId, String userRoles) {
         Donation donation = donationRespository.findById(UUID.fromString(donationId)).orElseThrow(() -> new ResourceNotFoundException("Donation not found!"));
-        if ("ADMIN".equals(userRole)) {
+        if (userRoles.contains("ADMIN")) {
             return donationMapper.generateDto(donation);
         }
 
-        if ("CITIZEN".equals(userRole)
+        if (userRoles.contains("CITIZEN")
                 && userId.equals(donation.getDonorId().toString())) {
             return donationMapper.generateDto(donation);
         }
 
-        if ("NGO_REP".equals(userRole)
+        if (userRoles.contains("NGO_REP")
                 && campaignClient.checkOwnership(donation.getCampaignId().toString(), userId)) {
             return donationMapper.generateDto(donation);
         }

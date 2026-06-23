@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -37,8 +35,9 @@ public class JwtService {
         return claims.get("userId", String.class);
     }
 
-    public String extractRole(Claims claims) {
-        return claims.get("role", String.class);
+    public Set<String> extractRoles(Claims claims) {
+        List<String> roleList = claims.get("roles", List.class);
+        return new HashSet<>(roleList);
     }
 
     private Date extractExpiration(Claims claims) {

@@ -3,6 +3,7 @@ package com.suman.sharecare.auth.controller;
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.AuthRequestDto;
 import com.suman.sharecare.auth.dto.user_dtos.UserRegisterRequestDto;
+import com.suman.sharecare.auth.entity.Role;
 import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.security.jwt.JwtService;
 import com.suman.sharecare.auth.service.UserService;
@@ -15,7 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,7 +42,7 @@ public class AuthController {
         User user = (User) (authentication.getPrincipal());
         UUID userId = user.getId();
         String username = user.getUsername();
-        String role = user.getRole().getName();
-        return ResponseEntity.ok(jwtService.generateToken(username, role, userId));
+        Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        return ResponseEntity.ok(jwtService.generateToken(username, roles, userId));
     }
 }
