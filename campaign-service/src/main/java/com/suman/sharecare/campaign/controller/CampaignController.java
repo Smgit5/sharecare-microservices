@@ -27,7 +27,7 @@ import java.util.UUID;
 public class CampaignController {
     private final CampaignService campaignService;
 
-    // NGO_REP APIs - start
+    // CITIZEN APIs - start
     @PostMapping
     public ResponseEntity<CampaignResponseDto> createCampaign(@RequestHeader("X-User-Id") String userId, @Valid @RequestBody CampaignRequestDto campaignRequestDto) {
         return ResponseEntity.ok(campaignService.createCampaign(userId, campaignRequestDto));
@@ -47,7 +47,7 @@ public class CampaignController {
     ) {
         return ResponseEntity.ok(campaignService.getMyCampaigns(userId, pageable));
     }
-    // NGO_REP APIs - end
+    // CITIZEN APIs - end
 
     // ADMIN APIs - start
     @PatchMapping("/{campaignId}/approve")
@@ -66,12 +66,12 @@ public class CampaignController {
     }
     // ADMIN APIs - end
 
-    // Both NGO_REP (Ownership required) and ADMIN apis - start
+    // Both CITIZEN (Ownership required) and ADMIN apis - start
     @PatchMapping("/{campaignId}/close")
     public ResponseEntity<CampaignResponseDto> closeCampaign(@PathVariable UUID campaignId, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String roles) {
         return ResponseEntity.ok(campaignService.closeCampaign(campaignId, userId, roles));
     }
-    // Both NGO_REP (Ownership required) and ADMIN apis - end
+    // Both CITIZEN (Ownership required) and ADMIN apis - end
 
     // Public APIs - start
     @GetMapping

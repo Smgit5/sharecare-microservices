@@ -108,7 +108,7 @@ public class CampaignService {
         if(!existingCampaign.getStatus().getName().equals(StatusService.ACTIVE)) {
             throw new ActionNotAllowedException("This action can be performed only on active campaigns.");
         }
-        if(roles.contains("NGO_REP") && !userId.equals(existingCampaign.getCreatedByUserId().toString())) {
+        if(roles.contains("CITIZEN") && !userId.equals(existingCampaign.getCreatedByUserId().toString())) {
             throw new ResourceNotFoundException("Campaign not found!"); // for protecting ownership
         }
         existingCampaign.setStatus(statusService.getStatusByName(StatusService.CLOSED));

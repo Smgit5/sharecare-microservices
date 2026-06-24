@@ -9,7 +9,6 @@ import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.UserRepository;
 import com.suman.sharecare.auth.util.UserMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;

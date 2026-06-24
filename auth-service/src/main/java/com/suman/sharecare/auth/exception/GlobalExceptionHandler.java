@@ -5,6 +5,7 @@ import com.suman.sharecare.auth.dto.page_dtos.ValidationErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,20 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponseDto> handleAuthenticationException(AuthenticationException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleAuthenticationException : {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
+
+    @ExceptionHandler(ActionNotAllowedException.class)
+    public ResponseEntity<ApiResponseDto> handleActionNotAllowedException(ActionNotAllowedException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleActionNotAllowedException : {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {

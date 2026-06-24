@@ -8,6 +8,5 @@ import java.util.UUID;
 @Getter
 @Setter
 public class RoleResponseDto {
-    private UUID id;
     private String role;
 }

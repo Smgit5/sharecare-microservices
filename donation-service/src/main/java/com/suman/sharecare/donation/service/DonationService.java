@@ -87,11 +87,6 @@ public class DonationService {
             return donationMapper.generateDto(donation);
         }
 
-        if (userRoles.contains("NGO_REP")
-                && campaignClient.checkOwnership(donation.getCampaignId().toString(), userId)) {
-            return donationMapper.generateDto(donation);
-        }
-
         throw new ResourceNotFoundException("Donation not found!");
     }
 

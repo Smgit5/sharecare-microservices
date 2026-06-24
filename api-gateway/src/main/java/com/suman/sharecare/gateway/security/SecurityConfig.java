@@ -36,14 +36,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                     auth -> auth
                             .requestMatchers(HttpMethod.GET, "/donations/my/campaign/**").hasRole(UserRole.CITIZEN.name())
-                            .requestMatchers(HttpMethod.GET, "/donations/campaign/**").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers(HttpMethod.GET, "/donations/my").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.POST, "/donations").hasRole(UserRole.CITIZEN.name())
-                            .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole(UserRole.NGO_REP.name())
-                            .requestMatchers(HttpMethod.POST, "/campaigns").hasRole(UserRole.NGO_REP.name())
-                            .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole(UserRole.NGO_REP.name())
+                            .requestMatchers(HttpMethod.GET, "/campaigns/my").hasRole(UserRole.CITIZEN.name())
+                            .requestMatchers(HttpMethod.POST, "/campaigns").hasRole(UserRole.CITIZEN.name())
+                            .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole(UserRole.ADMIN.name())
-                            .requestMatchers(HttpMethod.PATCH, "/campaigns/*/close").hasAnyRole(UserRole.NGO_REP.name(), UserRole.ADMIN.name())
                             .requestMatchers("/auth/register", "/auth/login").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
