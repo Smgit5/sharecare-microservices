@@ -1,21 +1,26 @@
 package com.suman.sharecare.auth.service;
 
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
-import com.suman.sharecare.auth.dto.user_dtos.UserRegisterRequestDto;
-import com.suman.sharecare.auth.dto.user_dtos.UserResponseDto;
-import com.suman.sharecare.auth.dto.user_dtos.UserUpdateRequestDto;
+import com.suman.sharecare.auth.dto.user_dtos.*;
+import com.suman.sharecare.auth.entity.RefreshToken;
 import com.suman.sharecare.auth.entity.Role;
 import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.UserRepository;
+import com.suman.sharecare.auth.security.jwt.JwtService;
 import com.suman.sharecare.auth.util.UserMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,9 @@ public class UserService {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public ApiResponseDto register(UserRegisterRequestDto userRegisterRequestDto) {
         User user = userMapper.toEntity(userRegisterRequestDto);
@@ -48,5 +56,28 @@ public class UserService {
     public ApiResponseDto deleteProfile(String id) {
         userRepository.deleteById(UUID.fromString(id));
         return new ApiResponseDto(HttpStatus.OK.value(), "Your account has been deleted.");
+    }
+
+    public AuthResponseDto login(@Valid AuthRequestDto authRequestDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequestDto.getUsername(), authRequestDto.getPassword())
+        );
+        User user = (User) (authentication.getPrincipal());
+        UUID userId = user.getId();
+        String username = user.getUsername();
+        Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        String accessToken = jwtService.generateToken(username, roles, userId);
+        String refreshToken = refreshTokenService.generateRefreshToken(user);
+        return new AuthResponseDto(accessToken, refreshToken);
+    }
+
+    public AuthResponseDto refresh(RefreshTokenRequestDto tokenRequestDto) {
+        RefreshToken refreshToken = refreshTokenService.validateRefreshToken(tokenRequestDto.getToken());
+        refreshTokenService.revokeRefreshToken(refreshToken);
+        User user = refreshToken.getUser();
+        Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        String newRefreshToken = refreshTokenService.generateRefreshToken(user);
+        String newAccessToken = jwtService.generateToken(user.getUsername(), roles, user.getId());
+        return new AuthResponseDto(newAccessToken, newRefreshToken);
     }
 }
