@@ -1,19 +1,14 @@
 package com.suman.sharecare.auth.controller;
 
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
-import com.suman.sharecare.auth.dto.user_dtos.AuthRequestDto;
-import com.suman.sharecare.auth.dto.user_dtos.AuthResponseDto;
-import com.suman.sharecare.auth.dto.user_dtos.RefreshTokenRequestDto;
-import com.suman.sharecare.auth.dto.user_dtos.UserRegisterRequestDto;
+import com.suman.sharecare.auth.dto.user_dtos.*;
+import com.suman.sharecare.auth.service.EmailVerificationService;
 import com.suman.sharecare.auth.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -22,7 +17,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponseDto> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
+    public ResponseEntity<EmailVerificationResponseDto> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(userRegisterRequestDto));
     }
 
@@ -34,5 +29,15 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponseDto> refresh(@RequestBody RefreshTokenRequestDto tokenRequestDto) {
         return ResponseEntity.ok(userService.refresh(tokenRequestDto));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponseDto> verifyEmail(@Valid @RequestBody EmailVerificationRequestDto emailVerificationRequestDto, @RequestHeader("X-User-Id") String userId) {
+        return ResponseEntity.ok(userService.verifyEmail(emailVerificationRequestDto, userId));
+    }
+
+    @PostMapping("/resend-verification-email")
+    public ResponseEntity<EmailVerificationResponseDto> resendVerificationEmail(@RequestHeader("X-User-Id") String userId) {
+        return ResponseEntity.ok(userService.resendVerificationEmail(userId));
     }
 }

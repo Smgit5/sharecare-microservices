@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
     @PrePersist
     public void onCreate() {
         this.registeredAt = LocalDateTime.now();
