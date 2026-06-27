@@ -47,4 +47,15 @@ public class AuthController {
     public ResponseEntity<EmailVerificationResponseDto> resendVerificationEmail(@RequestHeader("X-User-Id") String userId) {
         return ResponseEntity.ok(userService.resendVerificationEmail(userId));
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<PasswordResetResponseDto> forgotPassword(@Valid @RequestBody PasswordResetRequestDto passwordResetRequestDto) {
+        return ResponseEntity.ok(userService.forgotPassword(passwordResetRequestDto));
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<ApiResponseDto> resetPassword(@Valid @RequestBody NewPasswordRequestDto newPasswordRequestDto) {
+        userService.resetPassword(newPasswordRequestDto);
+        return ResponseEntity.ok(new ApiResponseDto(HttpStatus.OK.value(), "Password has been reset. Please login with the new password."));
+    }
 }

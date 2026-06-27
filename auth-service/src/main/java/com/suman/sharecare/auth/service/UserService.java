@@ -2,12 +2,10 @@ package com.suman.sharecare.auth.service;
 
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.*;
-import com.suman.sharecare.auth.entity.EmailVerificationToken;
-import com.suman.sharecare.auth.entity.RefreshToken;
-import com.suman.sharecare.auth.entity.Role;
-import com.suman.sharecare.auth.entity.User;
+import com.suman.sharecare.auth.entity.*;
 import com.suman.sharecare.auth.exception.ActionNotAllowedException;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
+import com.suman.sharecare.auth.repository.PasswordResetTokenRepository;
 import com.suman.sharecare.auth.repository.UserRepository;
 import com.suman.sharecare.auth.security.jwt.JwtService;
 import com.suman.sharecare.auth.util.UserMapper;
@@ -38,6 +36,9 @@ public class UserService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final EmailVerificationService emailVerificationService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+    private static final long PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES = 2;
 
     public EmailVerificationResponseDto register(UserRegisterRequestDto userRegisterRequestDto) {
         User user = userMapper.toEntity(userRegisterRequestDto);
@@ -103,5 +104,34 @@ public class UserService {
         }
         String token = emailVerificationService.reuseOrGenerateToken(user, LocalDateTime.now());
         return new EmailVerificationResponseDto(token);
+    }
+
+    public PasswordResetResponseDto forgotPassword(PasswordResetRequestDto passwordResetRequestDto) {
+        Optional<User> optionalUser = userRepository.findByUsername(passwordResetRequestDto.getUsername());
+        if(optionalUser.isEmpty()) {
+            return new PasswordResetResponseDto("If an account exists, a password reset link has been sent.");
+        }
+        User user = optionalUser.get();
+        Optional<String> usableToken = passwordResetTokenRepository.findUsableToken(user, LocalDateTime.now());
+        if(usableToken.isPresent()) {
+            return new PasswordResetResponseDto(usableToken.get());
+        }
+        PasswordResetToken passwordResetToken = new PasswordResetToken();
+        passwordResetToken.setUser(user);
+        passwordResetToken.setToken(UUID.randomUUID().toString());
+        passwordResetToken.setExpiry(LocalDateTime.now().plusMinutes(PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES));
+        PasswordResetToken savedToken = passwordResetTokenRepository.save(passwordResetToken);
+        return new PasswordResetResponseDto(savedToken.getToken());
+    }
+
+    @Transactional
+    public void resetPassword(NewPasswordRequestDto newPasswordRequestDto) {
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found"));
+        if(passwordResetToken.isUsed() || passwordResetToken.getExpiry().isBefore(LocalDateTime.now())) {
+            throw new ActionNotAllowedException("The token has expired or has been used before.");
+        }
+        User user = passwordResetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getNewPassword()));
+        passwordResetToken.setUsed(true);
     }
 }
