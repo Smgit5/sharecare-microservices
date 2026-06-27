@@ -1,11 +1,14 @@
 package com.suman.sharecare.auth.service;
 
+import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
+import com.suman.sharecare.auth.dto.user_dtos.RefreshTokenRequestDto;
 import com.suman.sharecare.auth.entity.RefreshToken;
 import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.exception.ActionNotAllowedException;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,5 +43,15 @@ public class RefreshTokenService {
     public void revokeRefreshToken(RefreshToken refreshToken) {
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
+    }
+
+    public ApiResponseDto logout(RefreshTokenRequestDto tokenRequestDto) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(tokenRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found!"));
+        if(refreshToken.isRevoked()) {
+            throw new ActionNotAllowedException("Token is already revoked.");
+        }
+        refreshToken.setRevoked(true);
+        refreshTokenRepository.save(refreshToken);
+        return new ApiResponseDto(HttpStatus.OK.value(), "You have been logged out.");
     }
 }

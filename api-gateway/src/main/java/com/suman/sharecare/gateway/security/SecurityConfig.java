@@ -42,7 +42,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/campaigns").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole(UserRole.ADMIN.name())
-                            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh", "/auth/logout").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/donations/test").permitAll()
