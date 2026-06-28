@@ -112,6 +112,9 @@ public class UserService {
             return new PasswordResetResponseDto("If an account exists, a password reset link has been sent.");
         }
         User user = optionalUser.get();
+        if(!user.isEmailVerified()) {
+            throw new ActionNotAllowedException("Please verify your email id first.");
+        }
         Optional<String> usableToken = passwordResetTokenRepository.findUsableToken(user, LocalDateTime.now());
         if(usableToken.isPresent()) {
             return new PasswordResetResponseDto(usableToken.get());
