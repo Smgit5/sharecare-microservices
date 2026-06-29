@@ -24,3 +24,7 @@ Thumbs.db
 
 # Dependencies
 node_modules/
+
+# Added by developer - start
+secrets/
+# Added by developer - end
