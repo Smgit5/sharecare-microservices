@@ -1,5 +1,6 @@
 package com.suman.sharecare.donation.exception;
 
+import com.razorpay.RazorpayException;
 import com.suman.sharecare.donation.dto.page_dtos.ApiResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RazorpayException.class)
+    public ResponseEntity<ApiResponseDto> handleRazorpayException(RazorpayException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleRazorpayException, error = ", ex);
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.BAD_GATEWAY.value(), "Payment gateway experiencing issue. Donation could not be completed.");
+        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {

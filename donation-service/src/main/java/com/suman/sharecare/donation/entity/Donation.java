@@ -43,6 +43,12 @@ public class Donation {
     @Column(unique = true)
     private String paymentReferenceId;
 
+    @Column(unique = true)
+    private String providerOrderId;
+
+    @Column(unique = true)
+    private String providerPaymentId;
+
     @PrePersist
     public void onCreate() {
         this.paymentInitiatedAt = LocalDateTime.now();

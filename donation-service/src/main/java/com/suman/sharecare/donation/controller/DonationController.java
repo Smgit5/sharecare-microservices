@@ -1,5 +1,6 @@
 package com.suman.sharecare.donation.controller;
 
+import com.razorpay.RazorpayException;
 import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignAmountUpdateRequestDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
@@ -24,7 +25,7 @@ public class DonationController {
     private final DonationService donationService;
 
     @PostMapping
-    public ResponseEntity<DonationResponseDto> donate(@RequestBody DonationRequestDto donationRequestDto, @RequestHeader("X-User-Id") String donorId) {
+    public ResponseEntity<DonationResponseDto> donate(@RequestBody DonationRequestDto donationRequestDto, @RequestHeader("X-User-Id") String donorId) throws RazorpayException {
         return ResponseEntity.ok(donationService.donate(donationRequestDto, donorId));
     }
 

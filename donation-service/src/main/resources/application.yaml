@@ -16,7 +16,15 @@ spring:
 server:
   port: 8083
 
+# Eureka client properties - start
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    # Eureka client properties - end
+
+# Razorpay properties - start
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID}
+  key-secret: ${RAZORPAY_KEY_SECRET}
+# Razorpay properties - end

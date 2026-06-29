@@ -1,5 +1,7 @@
 package com.suman.sharecare.donation.service;
 
+import com.razorpay.Order;
+import com.razorpay.RazorpayException;
 import com.suman.sharecare.donation.config.CampaignClient;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
 import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
@@ -36,8 +38,9 @@ public class DonationService {
     private final DonationMapper donationMapper;
     private final StatusService statusService;
     private final CampaignClient campaignClient;
+    private final RazorpayPaymentService razorpayPaymentService;
 
-    public DonationResponseDto donate(DonationRequestDto donationRequestDto, String donorId) {
+    public DonationResponseDto donate(DonationRequestDto donationRequestDto, String donorId) throws RazorpayException {
         CampaignDonationCheckResponseDto donationCheckResponseDto = campaignClient.checkIfDonationAllowed(donationRequestDto.getCampaignId());
         if(!donationCheckResponseDto.isDonationAllowed()) {
             throw new ActionNotAllowedException("Donation is allowed only for active campaigns");
@@ -49,8 +52,11 @@ public class DonationService {
         donation.setStatus(statusService.getStatusByName(DonationStatusNames.PENDING.name()));
         donation.setPaymentReferenceId(UUID.randomUUID().toString());
         Donation pendingDonation = donationRespository.save(donation);
-        return donationMapper.generateDto(pendingDonation);
-    }
+        Order order = razorpayPaymentService.createOrder(pendingDonation.getAmount(), pendingDonation.getPaymentReferenceId());
+        log.info("Inside DonationService :: donate, Order = {}", order.toString());
+        pendingDonation.setProviderOrderId(order.get("id"));
+        return donationMapper.generateDto(donationRespository.save(pendingDonation));
+}
 
     public PageResponseDto<DonationResponseDto> viewMyDonationHistory(String donorId, Pageable pageable) {
         Page<Donation> donations = donationRespository.findAllByDonorId(UUID.fromString(donorId), pageable);
