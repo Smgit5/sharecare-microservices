@@ -2,10 +2,7 @@ package com.suman.sharecare.donation.controller;
 
 import com.razorpay.RazorpayException;
 import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignAmountUpdateRequestDto;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationStatisticsResponseDto;
-import com.suman.sharecare.donation.dto.donation_dtos.PaymentStatusUpdateRequestDto;
+import com.suman.sharecare.donation.dto.donation_dtos.*;
 import com.suman.sharecare.donation.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.service.DonationService;
@@ -15,6 +12,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +30,12 @@ public class DonationController {
     @PatchMapping("/payment-status/{paymentReferenceId}")
     public ResponseEntity<ApiResponseDto> checkPaymentStatus(@PathVariable String paymentReferenceId, @Valid @RequestBody PaymentStatusUpdateRequestDto paymentStatusUpdateRequestDto) {
         return ResponseEntity.ok(donationService.checkPaymentStatus(paymentReferenceId, paymentStatusUpdateRequestDto));
+    }
+
+    @PostMapping("/razorpay/verify")
+    public ResponseEntity<ApiResponseDto> verifyRazorpayPayment(@Valid @RequestBody RazorpayPaymentVerificationRequestDto paymentVerificationRequestDto) throws RazorpayException {
+        donationService.verifyRazorpayPayment(paymentVerificationRequestDto);
+        return ResponseEntity.ok(new ApiResponseDto(HttpStatus.OK.value(), "Donation successful"));
     }
 
     @GetMapping("/{donationId}")

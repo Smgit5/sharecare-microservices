@@ -48,6 +48,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/donations/test").permitAll()
                             .requestMatchers(HttpMethod.PATCH, "/donations/payment-status/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/donations/razorpay/verify").permitAll()
                             .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

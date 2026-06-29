@@ -27,4 +27,5 @@ public interface DonationRespository extends JpaRepository<Donation, UUID> {
     Boolean existsByCampaignIdAndDonorId(UUID campaignId, UUID donorId);
     Page<Donation> findAllByCampaignIdAndDonorId(UUID campaignId, UUID donorId, Pageable pageable);
     Optional<Donation> findByPaymentReferenceId(String paymentReferenceId);
+    Optional<Donation> findByProviderOrderId(String orderId);
 }

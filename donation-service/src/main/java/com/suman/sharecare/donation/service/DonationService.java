@@ -3,11 +3,8 @@ package com.suman.sharecare.donation.service;
 import com.razorpay.Order;
 import com.razorpay.RazorpayException;
 import com.suman.sharecare.donation.config.CampaignClient;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationRequestDto;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationResponseDto;
+import com.suman.sharecare.donation.dto.donation_dtos.*;
 import com.suman.sharecare.donation.dto.campaign_donation_dtos.CampaignDonationCheckResponseDto;
-import com.suman.sharecare.donation.dto.donation_dtos.DonationStatisticsResponseDto;
-import com.suman.sharecare.donation.dto.donation_dtos.PaymentStatusUpdateRequestDto;
 import com.suman.sharecare.donation.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.donation.dto.page_dtos.PageResponseDto;
 import com.suman.sharecare.donation.entity.Donation;
@@ -17,6 +14,7 @@ import com.suman.sharecare.donation.exception.ResourceNotFoundException;
 import com.suman.sharecare.donation.repository.DonationRespository;
 import com.suman.sharecare.donation.util.DonationMapper;
 import com.suman.sharecare.donation.util.PageMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -139,5 +137,21 @@ public class DonationService {
                 }
             }
         }
+    }
+
+    public void verifyRazorpayPayment(@Valid RazorpayPaymentVerificationRequestDto paymentVerificationRequestDto) throws RazorpayException {
+        boolean isValid = razorpayPaymentService.verifyPaymentSignature(paymentVerificationRequestDto.getRazorpayOrderId(), paymentVerificationRequestDto.getRazorpayPaymentId(), paymentVerificationRequestDto.getRazorpaySignature());
+        if(!isValid) {
+            throw new ActionNotAllowedException("Invalid payment signature");
+        }
+        Donation donation = donationRespository.findByProviderOrderId(paymentVerificationRequestDto.getRazorpayOrderId()).orElseThrow(() -> new ResourceNotFoundException("Donation not found"));
+        if(!DonationStatusNames.PENDING.name().equals(donation.getStatus().getStatus())) {
+            throw new ActionNotAllowedException("Payment already processed");
+        }
+        updateRaisedAmountWithRetry(donation.getCampaignId().toString(), donation.getAmount());
+        donation.setProviderPaymentId(paymentVerificationRequestDto.getRazorpayPaymentId());
+        donation.setStatus(statusService.getStatusByName(DonationStatusNames.SUCCESS.name()));
+        donation.setPaidAt(LocalDateTime.now());
+        donationRespository.save(donation);
     }
 }
