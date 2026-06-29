@@ -23,7 +23,7 @@ public class DonationController {
     private final DonationService donationService;
 
     @PostMapping
-    public ResponseEntity<DonationResponseDto> donate(@RequestBody DonationRequestDto donationRequestDto, @RequestHeader("X-User-Id") String donorId) throws RazorpayException {
+    public ResponseEntity<DonationInitiationResponseDto> donate(@RequestBody DonationRequestDto donationRequestDto, @RequestHeader("X-User-Id") String donorId) throws RazorpayException {
         return ResponseEntity.ok(donationService.donate(donationRequestDto, donorId));
     }
 
