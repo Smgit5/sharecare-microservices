@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class LocationResponseDto {
-    private UUID id;
     private String city;
     private String district;
     private String state;
