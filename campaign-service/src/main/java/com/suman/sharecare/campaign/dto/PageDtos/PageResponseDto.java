@@ -14,7 +14,7 @@ public class PageResponseDto<T> {
     private int page;
     private int size;
     private int numberOfElements;
-    private long totalElemets;
+    private long totalElements;
     private int totalPages;
     private boolean lastPage;
 }

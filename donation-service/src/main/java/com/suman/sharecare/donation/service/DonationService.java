@@ -55,8 +55,13 @@ public class DonationService {
         Order order = razorpayPaymentService.createOrder(pendingDonation.getAmount(), pendingDonation.getPaymentReferenceId());
         log.info("Inside DonationService :: donate, Order = {}", order.toString());
         pendingDonation.setProviderOrderId(order.get("id"));
-        donationRespository.save(pendingDonation);
-        return new DonationInitiationResponseDto(pendingDonation.getProviderOrderId(), razorpayConfig.getKeyId());
+        pendingDonation = donationRespository.save(pendingDonation);
+        return new DonationInitiationResponseDto(
+                razorpayConfig.getKeyId(),
+                order.get("amount"),
+                order.get("currency"),
+                order.get("id")
+        );
     }
 
     public PageResponseDto<DonationResponseDto> viewMyDonationHistory(String donorId, Pageable pageable) {
