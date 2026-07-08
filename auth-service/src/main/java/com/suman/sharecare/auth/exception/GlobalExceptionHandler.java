@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponseDto> handleAuthenticationException(AuthenticationException ex) {
         log.error("Inside GlobalExceptionHandler :: handleAuthenticationException : {}", ex.getMessage());
-        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return ResponseEntity.status(apiResponseDto.getStatus()).body(apiResponseDto);
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponseDto);
     }
 
     @ExceptionHandler(ActionNotAllowedException.class)
