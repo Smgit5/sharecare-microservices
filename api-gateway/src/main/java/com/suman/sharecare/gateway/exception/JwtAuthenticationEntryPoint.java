@@ -26,9 +26,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
-        ApiResponseDto apiResponseDto = new ApiResponseDto(response.getStatus(), "Unauthorized! Please login and try again.");
+        Object authError = request.getAttribute("authError");
+        String message;
+        if("TOKEN_EXPIRED".equals(authError)) {
+            message = "Your session has expired. Please log in again.";
+        } else {
+            message = "Unauthorized! Please login and try again.";
+        }
+        ApiResponseDto apiResponseDto = new ApiResponseDto(response.getStatus(), message);
         String json = objectMapper.writeValueAsString(apiResponseDto);
         response.getWriter().write(json);
-
     }
 }

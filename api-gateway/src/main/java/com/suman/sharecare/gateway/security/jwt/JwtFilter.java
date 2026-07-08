@@ -3,6 +3,7 @@ package com.suman.sharecare.gateway.security.jwt;
 import com.suman.sharecare.gateway.exception.JwtAuthenticationEntryPoint;
 import com.suman.sharecare.gateway.security.CustomHeaderRequestWrapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +57,13 @@ public class JwtFilter extends OncePerRequestFilter {
                             SecurityContextHolder.getContext().setAuthentication(authentication);
                         }
                     }
-                } catch (JwtException ex) {
+                }
+                catch (ExpiredJwtException ex) {
+                    request.setAttribute("authError", "TOKEN_EXPIRED");
+                    jwtAuthenticationEntryPoint.commence(request, response, new BadCredentialsException(ex.getMessage(), ex.getCause()));
+                    return;
+                }
+                catch (JwtException ex) {
                     jwtAuthenticationEntryPoint.commence(request, response, new BadCredentialsException(ex.getMessage(), ex.getCause()));
                     return;
                 }
