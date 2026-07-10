@@ -18,6 +18,13 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ApiResponseDto> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleRefreshTokenExpiredException : {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponseDto);
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponseDto> handleAuthenticationException(AuthenticationException ex) {
         log.error("Inside GlobalExceptionHandler :: handleAuthenticationException : {}", ex.getMessage());

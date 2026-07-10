@@ -29,7 +29,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Object authError = request.getAttribute("authError");
         String message;
         if("TOKEN_EXPIRED".equals(authError)) {
-            message = "Your session has expired. Please log in again.";
+            message = "Access token expired";
         } else {
             message = "Unauthorized! Please login and try again.";
         }

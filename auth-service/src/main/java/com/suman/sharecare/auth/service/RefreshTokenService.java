@@ -5,6 +5,7 @@ import com.suman.sharecare.auth.dto.user_dtos.RefreshTokenRequestDto;
 import com.suman.sharecare.auth.entity.RefreshToken;
 import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.exception.ActionNotAllowedException;
+import com.suman.sharecare.auth.exception.RefreshTokenExpiredException;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 60;
+    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 5;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateRefreshToken(User user) {
@@ -35,7 +36,7 @@ public class RefreshTokenService {
             throw new ActionNotAllowedException("Refresh token has been revoked");
         }
         if(refreshToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new ActionNotAllowedException("Refresh token has expired!");
+            throw new RefreshTokenExpiredException("Your session has expired. Please login.");
         }
         return refreshToken;
     }
