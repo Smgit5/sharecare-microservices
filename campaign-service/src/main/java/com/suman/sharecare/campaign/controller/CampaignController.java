@@ -1,6 +1,5 @@
 package com.suman.sharecare.campaign.controller;
 
-import com.suman.sharecare.campaign.dto.PageDtos.ApiResponseDto;
 import com.suman.sharecare.campaign.dto.PageDtos.PageResponseDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignAmountUpdateRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignDonationCheckResponseDto;
@@ -8,17 +7,14 @@ import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignRequestDto;
 import com.suman.sharecare.campaign.dto.campaign_dtos.CampaignResponseDto;
 import com.suman.sharecare.campaign.service.CampaignService;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
