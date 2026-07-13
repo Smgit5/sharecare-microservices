@@ -48,17 +48,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponseDto> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponseDto> handleValidationException(MethodArgumentNotValidException ex) {
         log.error("Inside GlobalExceptionHandler :: handleValidationException :", ex);
-
-        Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(err -> {
-            String fieldName = ((FieldError) err).getField();
-            String errorMsg = err.getDefaultMessage();
-            errorMap.put(fieldName, errorMsg);
-        });
-        ValidationErrorResponseDto validationErrorResponseDto = new ValidationErrorResponseDto(HttpStatus.BAD_REQUEST.value(), errorMap);
-        return ResponseEntity.badRequest().body(validationErrorResponseDto);
+        FieldError fieldError = ex.getBindingResult().getFieldErrors().getFirst();
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.BAD_REQUEST.value(), fieldError.getDefaultMessage());
+        return ResponseEntity.badRequest().body(apiResponseDto);
     }
 
 
