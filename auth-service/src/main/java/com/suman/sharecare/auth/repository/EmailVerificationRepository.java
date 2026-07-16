@@ -15,10 +15,10 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
     Optional<EmailVerificationToken> findByToken(String token);
 
     @Query("""
-            SELECT e.token FROM EmailVerificationToken e
+            SELECT e FROM EmailVerificationToken e
             WHERE e.user = :user
             AND e.used = false
             AND e.expiry > :currentTime
 """)
-    Optional<String> findUsableToken(User user, LocalDateTime currentTime);
+    Optional<EmailVerificationToken> findUsableToken(User user, LocalDateTime currentTime);
 }

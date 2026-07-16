@@ -1,14 +1,11 @@
 package com.suman.sharecare.auth.service;
 
-import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
-import com.suman.sharecare.auth.dto.user_dtos.EmailVerificationRequestDto;
 import com.suman.sharecare.auth.entity.EmailVerificationToken;
 import com.suman.sharecare.auth.entity.User;
 import com.suman.sharecare.auth.exception.ActionNotAllowedException;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.EmailVerificationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +15,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
-    private static final long EMAIL_VERIFICATION_EXPIRY_IN_MINUTES = 2;
+    private static final long EMAIL_VERIFICATION_EXPIRY_IN_MINUTES = 10;
     private final EmailVerificationRepository emailVerificationRepository;
 
     public EmailVerificationToken generateEmailVerificationToken(User user) {
@@ -42,8 +39,8 @@ public class EmailVerificationService {
         return emailVerificationToken;
     }
 
-    public String reuseOrGenerateToken(User user, LocalDateTime currentTime) {
-        Optional<String> verificationToken = emailVerificationRepository.findUsableToken(user, currentTime);
-        return verificationToken.orElseGet(() -> generateEmailVerificationToken(user).getToken());
+    public EmailVerificationToken reuseOrGenerateToken(User user, LocalDateTime currentTime) {
+        Optional<EmailVerificationToken> verificationToken = emailVerificationRepository.findUsableToken(user, currentTime);
+        return verificationToken.orElseGet(() -> generateEmailVerificationToken(user));
     }
 }

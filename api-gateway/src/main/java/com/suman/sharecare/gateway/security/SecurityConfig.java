@@ -50,7 +50,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PUT, "/campaigns/**").hasRole(UserRole.CITIZEN.name())
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole(UserRole.ADMIN.name())
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh", "/auth/logout", "/auth/forgot-password").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh", "/auth/logout", "/auth/forgot-password", "/auth/resend-verification-email/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/auth/verify-email/**").permitAll()
                             .requestMatchers("/auth/test/**").permitAll()
                             .requestMatchers(HttpMethod.PATCH, "/auth/reset-password").permitAll()

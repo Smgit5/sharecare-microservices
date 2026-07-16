@@ -105,13 +105,16 @@ public class UserService {
         user.setEmailVerified(true);
     }
 
-    public EmailVerificationResponseDto resendVerificationEmail(String userId) {
-        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return;
+        }
         if(user.isEmailVerified()) {
             throw new ActionNotAllowedException("Email is already verified.");
         }
-        String token = emailVerificationService.reuseOrGenerateToken(user, LocalDateTime.now());
-        return new EmailVerificationResponseDto(token);
+        EmailVerificationToken emailVerificationToken = emailVerificationService.reuseOrGenerateToken(user, LocalDateTime.now());
+        emailService.sendVerificationEmail(emailVerificationToken);
     }
 
     public PasswordResetResponseDto forgotPassword(PasswordResetRequestDto passwordResetRequestDto) {

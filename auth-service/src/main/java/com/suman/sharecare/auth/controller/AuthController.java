@@ -1,5 +1,6 @@
 package com.suman.sharecare.auth.controller;
 
+import com.suman.sharecare.auth.dto.email_dtos.ResendVerificationEmailRequestDto;
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.*;
 import com.suman.sharecare.auth.entity.EmailVerificationToken;
@@ -47,8 +48,9 @@ public class AuthController {
     }
 
     @PostMapping("/resend-verification-email")
-    public ResponseEntity<EmailVerificationResponseDto> resendVerificationEmail(@RequestHeader("X-User-Id") String userId) {
-        return ResponseEntity.ok(userService.resendVerificationEmail(userId));
+    public ResponseEntity<Void> resendVerificationEmail(@Valid @RequestBody ResendVerificationEmailRequestDto verificationEmailRequestDto) {
+        userService.resendVerificationEmail(verificationEmailRequestDto.getEmail());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/forgot-password")
