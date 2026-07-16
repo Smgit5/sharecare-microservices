@@ -21,20 +21,17 @@ public class EmailVerificationService {
     private static final long EMAIL_VERIFICATION_EXPIRY_IN_MINUTES = 2;
     private final EmailVerificationRepository emailVerificationRepository;
 
-    public String generateEmailVerificationToken(User user) {
+    public EmailVerificationToken generateEmailVerificationToken(User user) {
         EmailVerificationToken emailVerificationToken = new EmailVerificationToken();
         emailVerificationToken.setToken(UUID.randomUUID().toString());
         emailVerificationToken.setUser(user);
         emailVerificationToken.setExpiry(LocalDateTime.now().plusMinutes(EMAIL_VERIFICATION_EXPIRY_IN_MINUTES));
         EmailVerificationToken savedToken = emailVerificationRepository.save(emailVerificationToken);
-        return savedToken.getToken();
+        return savedToken;
     }
 
-    public EmailVerificationToken verifyEmail(EmailVerificationRequestDto emailVerificationRequestDto, String userId) {
-        EmailVerificationToken emailVerificationToken = emailVerificationRepository.findByToken(emailVerificationRequestDto.getRequestToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found!"));
-        if(!emailVerificationToken.getUser().getId().toString().equals(userId)) {
-            throw new ResourceNotFoundException("Verification token cannot be found.");
-        }
+    public EmailVerificationToken verifyEmail(String token) {
+        EmailVerificationToken emailVerificationToken = emailVerificationRepository.findByToken(token).orElseThrow(() -> new ResourceNotFoundException("Token not found!"));
         if(emailVerificationToken.getExpiry().isBefore(LocalDateTime.now())) {
             throw new ActionNotAllowedException("Token has expired. Please resend verify email request.");
         }
@@ -47,6 +44,6 @@ public class EmailVerificationService {
 
     public String reuseOrGenerateToken(User user, LocalDateTime currentTime) {
         Optional<String> verificationToken = emailVerificationRepository.findUsableToken(user, currentTime);
-        return verificationToken.orElseGet(() -> generateEmailVerificationToken(user));
+        return verificationToken.orElseGet(() -> generateEmailVerificationToken(user).getToken());
     }
 }

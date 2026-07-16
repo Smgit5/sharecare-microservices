@@ -3,6 +3,7 @@ package com.suman.sharecare.auth.exception;
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.page_dtos.ValidationErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -17,6 +18,13 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponseDto> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("Inside GlobalExceptionHandler :: handleDataIntegrityViolationException : {}", ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponseDto);
+    }
 
     @ExceptionHandler(RefreshTokenExpiredException.class)
     public ResponseEntity<ApiResponseDto> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex) {

@@ -2,6 +2,7 @@ package com.suman.sharecare.auth.controller;
 
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.*;
+import com.suman.sharecare.auth.entity.EmailVerificationToken;
 import com.suman.sharecare.auth.service.EmailVerificationService;
 import com.suman.sharecare.auth.service.RefreshTokenService;
 import com.suman.sharecare.auth.service.UserService;
@@ -19,8 +20,10 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<EmailVerificationResponseDto> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(userRegisterRequestDto));
+    public ResponseEntity<Void> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
+        EmailVerificationToken emailVerificationToken = userService.register(userRegisterRequestDto);
+        userService.sendEmailforEmailVerification(emailVerificationToken);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
@@ -38,9 +41,12 @@ public class AuthController {
         return ResponseEntity.ok(refreshTokenService.logout(tokenRequestDto));
     }
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<ApiResponseDto> verifyEmail(@Valid @RequestBody EmailVerificationRequestDto emailVerificationRequestDto, @RequestHeader("X-User-Id") String userId) {
-        return ResponseEntity.ok(userService.verifyEmail(emailVerificationRequestDto, userId));
+    @GetMapping("/verify-email")
+    public ResponseEntity<ApiResponseDto> verifyEmail(@RequestParam String token) {
+        userService.verifyEmail(token);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiResponseDto(HttpStatus.OK.value(), "Your email has been verified. You can login now."));
     }
 
     @PostMapping("/resend-verification-email")

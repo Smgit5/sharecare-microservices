@@ -51,6 +51,8 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PATCH, "/campaigns/*/approve", "/campaigns/*/reject", "/campaigns/*/send-back").hasRole(UserRole.ADMIN.name())
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh", "/auth/logout", "/auth/forgot-password").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/auth/verify-email/**").permitAll()
+                            .requestMatchers("/auth/test/**").permitAll()
                             .requestMatchers(HttpMethod.PATCH, "/auth/reset-password").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/campaigns/filter/**").permitAll()

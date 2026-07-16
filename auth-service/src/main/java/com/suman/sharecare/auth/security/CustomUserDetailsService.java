@@ -1,5 +1,8 @@
 package com.suman.sharecare.auth.security;
 
+import com.suman.sharecare.auth.entity.User;
+import com.suman.sharecare.auth.exception.ActionNotAllowedException;
+import com.suman.sharecare.auth.exception.EmailNotVerifiedException;
 import com.suman.sharecare.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +16,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        if(!user.isEmailVerified()) {
+            throw new EmailNotVerifiedException("Email must be verified first");
+        }
+        return user;
     }
 }

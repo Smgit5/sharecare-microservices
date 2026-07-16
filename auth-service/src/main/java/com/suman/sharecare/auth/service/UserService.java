@@ -4,6 +4,7 @@ import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.*;
 import com.suman.sharecare.auth.entity.*;
 import com.suman.sharecare.auth.exception.ActionNotAllowedException;
+import com.suman.sharecare.auth.exception.DuplicateResourceException;
 import com.suman.sharecare.auth.exception.ResourceNotFoundException;
 import com.suman.sharecare.auth.repository.PasswordResetTokenRepository;
 import com.suman.sharecare.auth.repository.UserRepository;
@@ -12,6 +13,7 @@ import com.suman.sharecare.auth.util.UserMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,18 +38,47 @@ public class UserService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final EmailVerificationService emailVerificationService;
+    private final EmailService emailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     private static final long PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES = 2;
 
-    public EmailVerificationResponseDto register(UserRegisterRequestDto userRegisterRequestDto) {
+    @Value("${SHARECARE_DEV_URL}")
+    private String SHARECARE_BASE_URL;
+
+    public EmailVerificationToken register(UserRegisterRequestDto userRegisterRequestDto) {
+        if(userRepository.existsByUsername(userRegisterRequestDto.getUsername())) {
+            throw new DuplicateResourceException("Username already exists.");
+        }
+        if(userRepository.existsByEmail(userRegisterRequestDto.getEmail())) {
+            throw new DuplicateResourceException("Email already exists");
+        }
         User user = userMapper.toEntity(userRegisterRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleService.getRoleByName(RoleService.CITIZEN);
         user.setRoles(Set.of(role));
         User savedUser = userRepository.save(user);
-        String emailVerificationToken = emailVerificationService.generateEmailVerificationToken(savedUser);
-        return new EmailVerificationResponseDto(emailVerificationToken);
+        EmailVerificationToken emailVerificationToken = emailVerificationService.generateEmailVerificationToken(savedUser);
+        return emailVerificationToken;
+    }
+
+    public void sendEmailforEmailVerification(EmailVerificationToken emailVerificationToken) {
+        User receiver = emailVerificationToken.getUser();
+        String username = receiver.getUsername();
+        String emailVerificationUrl = SHARECARE_BASE_URL + "/verify-email?token=" + emailVerificationToken.getToken();
+        String subject = "Verify your ShareCare account.";
+        String body = """
+                Hello %s,
+                Welcome to ShareCare!
+                Please verify your email by clicking the link below:
+                
+                %s
+                
+                If you did not create this account, simply ignore this email.
+                """.formatted(username, emailVerificationUrl);
+
+        String receiverEmail = receiver.getEmail();
+        emailService.sendSimpleEMail(receiverEmail, subject, body);
     }
 
     public UserResponseDto viewProfile(String id) {
@@ -90,11 +121,10 @@ public class UserService {
     }
 
     @Transactional
-    public ApiResponseDto verifyEmail(@Valid EmailVerificationRequestDto emailVerificationRequestDto, String userId) {
-        EmailVerificationToken emailVerificationToken = emailVerificationService.verifyEmail(emailVerificationRequestDto, userId);
+    public void verifyEmail(String token) {
+        EmailVerificationToken emailVerificationToken = emailVerificationService.verifyEmail(token);
         User user = emailVerificationToken.getUser();
         user.setEmailVerified(true);
-        return new ApiResponseDto(HttpStatus.OK.value(), "Your email has been verified.");
     }
 
     public EmailVerificationResponseDto resendVerificationEmail(String userId) {

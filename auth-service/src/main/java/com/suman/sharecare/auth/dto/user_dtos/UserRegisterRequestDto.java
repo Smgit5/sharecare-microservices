@@ -1,5 +1,7 @@
 package com.suman.sharecare.auth.dto.user_dtos;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -22,4 +24,8 @@ public class UserRegisterRequestDto {
             message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character and be 8-15 characters long and must not contain whitespace"
     )
     private String password;
+
+    @NotBlank(message = "Email address is required")
+    @Email(message = "Please enter a valid email address")
+    private String email;
 }
