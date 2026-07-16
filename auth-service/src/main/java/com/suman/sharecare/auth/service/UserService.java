@@ -43,10 +43,7 @@ public class UserService {
 
     private static final long PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES = 2;
 
-    @Value("${SHARECARE_DEV_URL}")
-    private String SHARECARE_BASE_URL;
-
-    public EmailVerificationToken register(UserRegisterRequestDto userRegisterRequestDto) {
+    public void register(UserRegisterRequestDto userRegisterRequestDto) {
         if(userRepository.existsByUsername(userRegisterRequestDto.getUsername())) {
             throw new DuplicateResourceException("Username already exists.");
         }
@@ -59,26 +56,7 @@ public class UserService {
         user.setRoles(Set.of(role));
         User savedUser = userRepository.save(user);
         EmailVerificationToken emailVerificationToken = emailVerificationService.generateEmailVerificationToken(savedUser);
-        return emailVerificationToken;
-    }
-
-    public void sendEmailforEmailVerification(EmailVerificationToken emailVerificationToken) {
-        User receiver = emailVerificationToken.getUser();
-        String username = receiver.getUsername();
-        String emailVerificationUrl = SHARECARE_BASE_URL + "/verify-email?token=" + emailVerificationToken.getToken();
-        String subject = "Verify your ShareCare account.";
-        String body = """
-                Hello %s,
-                Welcome to ShareCare!
-                Please verify your email by clicking the link below:
-                
-                %s
-                
-                If you did not create this account, simply ignore this email.
-                """.formatted(username, emailVerificationUrl);
-
-        String receiverEmail = receiver.getEmail();
-        emailService.sendSimpleEMail(receiverEmail, subject, body);
+        emailService.sendVerificationEmail(emailVerificationToken);
     }
 
     public UserResponseDto viewProfile(String id) {

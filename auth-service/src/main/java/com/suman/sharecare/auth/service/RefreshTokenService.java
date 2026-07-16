@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 5;
+    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 43200;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateRefreshToken(User user) {

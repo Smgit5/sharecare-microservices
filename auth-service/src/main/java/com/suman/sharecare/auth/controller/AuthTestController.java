@@ -18,10 +18,4 @@ public class AuthTestController {
     public String test() {
         return "Hello from AUTH-SERVICE through Gateway";
     }
-
-    @PostMapping("/mail")
-    public ResponseEntity<Void> sendSimpleEmail() {
-        emailService.sendSimpleEMail("smprsnal05@gmail.com", "Test email subject", "Test email body");
-        return ResponseEntity.ok().build();
-    }
 }

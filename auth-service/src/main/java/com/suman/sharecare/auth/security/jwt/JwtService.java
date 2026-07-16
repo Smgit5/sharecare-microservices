@@ -22,7 +22,7 @@ public class JwtService {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
 
-    private static final long ACCESS_TOKEN_EXPIRY_IN_MINUTES = 2;
+    private static final long ACCESS_TOKEN_EXPIRY_IN_MINUTES = 15;
     public String generateToken(String username, Set<String> roles, UUID userId) {
         return Jwts.builder()
                 .subject(username)

@@ -21,8 +21,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto) {
-        EmailVerificationToken emailVerificationToken = userService.register(userRegisterRequestDto);
-        userService.sendEmailforEmailVerification(emailVerificationToken);
+        userService.register(userRegisterRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -42,11 +41,9 @@ public class AuthController {
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<ApiResponseDto> verifyEmail(@RequestParam String token) {
+    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         userService.verifyEmail(token);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ApiResponseDto(HttpStatus.OK.value(), "Your email has been verified. You can login now."));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/resend-verification-email")
