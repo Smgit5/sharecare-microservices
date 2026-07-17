@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PasswordResetRequestDto {
 
-    @NotBlank(message = "Either username or email is required for sending password reset link.")
-    private String username;
+    @NotBlank(message = "Email is required")
+    private String email;
 }

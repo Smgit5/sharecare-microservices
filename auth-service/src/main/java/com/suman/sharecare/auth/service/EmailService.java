@@ -1,6 +1,7 @@
 package com.suman.sharecare.auth.service;
 
 import com.suman.sharecare.auth.entity.EmailVerificationToken;
+import com.suman.sharecare.auth.entity.PasswordResetToken;
 import com.suman.sharecare.auth.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,5 +47,22 @@ public class EmailService {
 
         String receiverEmail = receiver.getEmail();
         sendEMail(receiverEmail, subject, body);
+    }
+
+    public void sendPasswordResetEmail(PasswordResetToken passwordResetToken) {
+        String to = passwordResetToken.getUser().getEmail();
+        String subject = "Reset your ShareCare password";
+        String username = passwordResetToken.getUser().getUsername();
+        String url = SHARECARE_BASE_URL + "/reset-password?token=" + passwordResetToken.getToken();
+        String body = """
+                Hello %s
+                Welcome to ShareCare!
+                Please reset your password by clicking the link below:
+                
+                %s
+                
+                If you did not create this account, simply ignore this email.
+                """.formatted(username, url);
+        sendEMail(to, subject, body);
     }
 }

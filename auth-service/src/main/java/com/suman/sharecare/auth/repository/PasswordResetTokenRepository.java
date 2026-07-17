@@ -15,10 +15,10 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     Optional<PasswordResetToken> findByToken(String token);
 
     @Query("""
-            SELECT p.token FROM PasswordResetToken p
+            SELECT p FROM PasswordResetToken p
             WHERE p.user = :user
             AND p.used = false
             AND p.expiry > :currentTime
 """)
-    Optional<String> findUsableToken(User user, LocalDateTime currentTime);
+    Optional<PasswordResetToken> findUsableToken(User user, LocalDateTime currentTime);
 }

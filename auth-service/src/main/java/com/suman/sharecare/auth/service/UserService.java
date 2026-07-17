@@ -40,8 +40,7 @@ public class UserService {
     private final EmailVerificationService emailVerificationService;
     private final EmailService emailService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-
-    private static final long PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES = 2;
+    private final PasswordService passwordService;
 
     public void register(UserRegisterRequestDto userRegisterRequestDto) {
         if(userRepository.existsByUsername(userRegisterRequestDto.getUsername())) {
@@ -117,25 +116,16 @@ public class UserService {
         emailService.sendVerificationEmail(emailVerificationToken);
     }
 
-    public PasswordResetResponseDto forgotPassword(PasswordResetRequestDto passwordResetRequestDto) {
-        Optional<User> optionalUser = userRepository.findByUsername(passwordResetRequestDto.getUsername());
-        if(optionalUser.isEmpty()) {
-            return new PasswordResetResponseDto("If an account exists, a password reset link has been sent.");
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return;
         }
-        User user = optionalUser.get();
         if(!user.isEmailVerified()) {
             throw new ActionNotAllowedException("Please verify your email id first.");
         }
-        Optional<String> usableToken = passwordResetTokenRepository.findUsableToken(user, LocalDateTime.now());
-        if(usableToken.isPresent()) {
-            return new PasswordResetResponseDto(usableToken.get());
-        }
-        PasswordResetToken passwordResetToken = new PasswordResetToken();
-        passwordResetToken.setUser(user);
-        passwordResetToken.setToken(UUID.randomUUID().toString());
-        passwordResetToken.setExpiry(LocalDateTime.now().plusMinutes(PASSWORD_RESET_TOKEN_EXPIRY_IN_MINUTES));
-        PasswordResetToken savedToken = passwordResetTokenRepository.save(passwordResetToken);
-        return new PasswordResetResponseDto(savedToken.getToken());
+        PasswordResetToken passwordResetToken = passwordService.reuseOrGenerateToken(user, LocalDateTime.now());
+        emailService.sendPasswordResetEmail(passwordResetToken);
     }
 
     @Transactional
