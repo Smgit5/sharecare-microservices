@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDto> handleUnknownException(Exception ex) {
         log.error("Inside GlobalExceptionHandler :: handleUnknownException :", ex);
 
-        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong!");
         return ResponseEntity.internalServerError().body(apiResponseDto);
     }
 }
