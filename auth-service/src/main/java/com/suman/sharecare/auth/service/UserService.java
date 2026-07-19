@@ -112,7 +112,7 @@ public class UserService {
         if(user.isEmailVerified()) {
             throw new ActionNotAllowedException("Email is already verified.");
         }
-        EmailVerificationToken emailVerificationToken = emailVerificationService.reuseOrGenerateToken(user, LocalDateTime.now());
+        EmailVerificationToken emailVerificationToken = emailVerificationService.reuseOrGenerateToken(user);
         emailService.sendVerificationEmail(emailVerificationToken);
     }
 
@@ -124,7 +124,7 @@ public class UserService {
         if(!user.isEmailVerified()) {
             throw new ActionNotAllowedException("Please verify your email id first.");
         }
-        PasswordResetToken passwordResetToken = passwordService.reuseOrGenerateToken(user, LocalDateTime.now());
+        PasswordResetToken passwordResetToken = passwordService.reuseOrGenerateToken(user);
         emailService.sendPasswordResetEmail(passwordResetToken);
     }
 
@@ -132,10 +132,11 @@ public class UserService {
     public void resetPassword(NewPasswordRequestDto newPasswordRequestDto) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found"));
         if(passwordResetToken.isUsed() || passwordResetToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new ActionNotAllowedException("The token has expired or has been used before.");
+            throw new ActionNotAllowedException("The link has expired or has been used before.");
         }
         User user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getNewPassword()));
         passwordResetToken.setUsed(true);
+        refreshTokenService.deleteRefreshTokensByUser(user);
     }
 }

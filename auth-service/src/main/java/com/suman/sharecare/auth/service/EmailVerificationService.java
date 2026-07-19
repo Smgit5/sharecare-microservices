@@ -39,8 +39,8 @@ public class EmailVerificationService {
         return emailVerificationToken;
     }
 
-    public EmailVerificationToken reuseOrGenerateToken(User user, LocalDateTime currentTime) {
-        Optional<EmailVerificationToken> verificationToken = emailVerificationRepository.findUsableToken(user, currentTime);
+    public EmailVerificationToken reuseOrGenerateToken(User user) {
+        Optional<EmailVerificationToken> verificationToken = emailVerificationRepository.findUsableToken(user, LocalDateTime.now());
         return verificationToken.orElseGet(() -> generateEmailVerificationToken(user));
     }
 }

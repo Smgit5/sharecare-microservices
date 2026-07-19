@@ -27,7 +27,7 @@ public class PasswordService {
         return savedToken;
     }
 
-    public PasswordResetToken reuseOrGenerateToken(User user, LocalDateTime currentTime) {
+    public PasswordResetToken reuseOrGenerateToken(User user) {
         Optional<PasswordResetToken> passwordResetToken = passwordResetTokenRepository.findUsableToken(user, LocalDateTime.now());
         return passwordResetToken.orElseGet(() -> generateNewPasswordResetToken(user));
     }

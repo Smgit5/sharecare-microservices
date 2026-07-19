@@ -37,7 +37,9 @@ public class EmailService {
         String subject = "Verify your ShareCare account.";
         String body = """
                 Hello %s,
+                
                 Welcome to ShareCare!
+                
                 Please verify your email by clicking the link below:
                 
                 %s
@@ -55,8 +57,10 @@ public class EmailService {
         String username = passwordResetToken.getUser().getUsername();
         String url = SHARECARE_BASE_URL + "/reset-password?token=" + passwordResetToken.getToken();
         String body = """
-                Hello %s
+                Hello %s,
+                
                 Welcome to ShareCare!
+                
                 Please reset your password by clicking the link below:
                 
                 %s

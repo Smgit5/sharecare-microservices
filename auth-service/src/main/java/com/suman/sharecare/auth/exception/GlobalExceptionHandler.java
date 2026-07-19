@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RefreshTokenExpiredException.class)
     public ResponseEntity<ApiResponseDto> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex) {
         log.error("Inside GlobalExceptionHandler :: handleRefreshTokenExpiredException : {}", ex.getMessage());
-        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.UNAUTHORIZED.value(), "Your session has expired. Please login.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponseDto);
     }
 

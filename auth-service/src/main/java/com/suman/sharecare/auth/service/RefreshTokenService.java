@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 43200;
+    private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 4; //43200
     private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateRefreshToken(User user) {
@@ -31,9 +31,9 @@ public class RefreshTokenService {
     }
 
     public RefreshToken validateRefreshToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new ResourceNotFoundException("Refresh token not found!"));
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new RefreshTokenExpiredException("Refresh token not found!"));
         if(refreshToken.isRevoked()) {
-            throw new ActionNotAllowedException("Refresh token has been revoked");
+            throw new RefreshTokenExpiredException("Refresh token has been revoked");
         }
         if(refreshToken.getExpiry().isBefore(LocalDateTime.now())) {
             throw new RefreshTokenExpiredException("Your session has expired. Please login.");
@@ -54,5 +54,9 @@ public class RefreshTokenService {
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
         return new ApiResponseDto(HttpStatus.OK.value(), "You have been logged out.");
+    }
+
+    public void deleteRefreshTokensByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
     }
 }
