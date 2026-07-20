@@ -1,9 +1,12 @@
 package com.suman.sharecare.auth.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.Getter;
 
-public class DuplicateResourceException extends DataIntegrityViolationException {
-    public DuplicateResourceException(String message) {
+@Getter
+public class DuplicateResourceException extends RuntimeException {
+    private String code;
+    public DuplicateResourceException(String code, String message) {
         super(message);
+        this.code = code;
     }
 }

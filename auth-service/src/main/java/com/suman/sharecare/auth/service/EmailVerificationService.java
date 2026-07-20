@@ -2,8 +2,8 @@ package com.suman.sharecare.auth.service;
 
 import com.suman.sharecare.auth.entity.EmailVerificationToken;
 import com.suman.sharecare.auth.entity.User;
-import com.suman.sharecare.auth.exception.ActionNotAllowedException;
-import com.suman.sharecare.auth.exception.ResourceNotFoundException;
+import com.suman.sharecare.auth.enums.ErrorCode;
+import com.suman.sharecare.auth.exception.EmailVerificationException;
 import com.suman.sharecare.auth.repository.EmailVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,12 +28,12 @@ public class EmailVerificationService {
     }
 
     public EmailVerificationToken verifyEmail(String token) {
-        EmailVerificationToken emailVerificationToken = emailVerificationRepository.findByToken(token).orElseThrow(() -> new ResourceNotFoundException("Token not found!"));
+        EmailVerificationToken emailVerificationToken = emailVerificationRepository.findByToken(token).orElseThrow(() -> new EmailVerificationException(ErrorCode.EMAIL_VERIFICATION_LINK_INVALID.name(), "Email verification token not found!"));
         if(emailVerificationToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new ActionNotAllowedException("Token has expired. Please resend verify email request.");
+            throw new EmailVerificationException(ErrorCode.EMAIL_VERIFICATION_LINK_INVALID.name(), "Email verification Token has expired!");
         }
         if(emailVerificationToken.isUsed()) {
-            throw new ActionNotAllowedException("Token has already been used.");
+            throw new EmailVerificationException(ErrorCode.EMAIL_VERIFICATION_LINK_INVALID.name(), "Email verification Token has already been used!");
         }
         emailVerificationToken.setUsed(true);
         return emailVerificationToken;

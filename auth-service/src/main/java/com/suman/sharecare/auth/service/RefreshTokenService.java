@@ -1,15 +1,12 @@
 package com.suman.sharecare.auth.service;
 
-import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.RefreshTokenRequestDto;
 import com.suman.sharecare.auth.entity.RefreshToken;
 import com.suman.sharecare.auth.entity.User;
-import com.suman.sharecare.auth.exception.ActionNotAllowedException;
-import com.suman.sharecare.auth.exception.RefreshTokenExpiredException;
-import com.suman.sharecare.auth.exception.ResourceNotFoundException;
+import com.suman.sharecare.auth.exception.RefreshTokenInvalidException;
 import com.suman.sharecare.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RefreshTokenService {
     private static final long REFRESH_TOKEN_EXPIRY_IN_MINUTES = 4; //43200
     private final RefreshTokenRepository refreshTokenRepository;
@@ -31,12 +29,12 @@ public class RefreshTokenService {
     }
 
     public RefreshToken validateRefreshToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new RefreshTokenExpiredException("Refresh token not found!"));
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new RefreshTokenInvalidException("Refresh token not found!"));
         if(refreshToken.isRevoked()) {
-            throw new RefreshTokenExpiredException("Refresh token has been revoked");
+            throw new RefreshTokenInvalidException("Refresh token has been revoked.");
         }
         if(refreshToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new RefreshTokenExpiredException("Your session has expired. Please login.");
+            throw new RefreshTokenInvalidException("Refresh token is expired.");
         }
         return refreshToken;
     }
@@ -46,14 +44,17 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
     }
 
-    public ApiResponseDto logout(RefreshTokenRequestDto tokenRequestDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(tokenRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found!"));
-        if(refreshToken.isRevoked()) {
-            throw new ActionNotAllowedException("Token is already revoked.");
+    public void logout(RefreshTokenRequestDto tokenRequestDto) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(tokenRequestDto.getToken()).orElse(null);
+        if(refreshToken == null) {
+            log.warn("Inside RefreshTokenService :: logout - Refresh token not found.");
+            return;
         }
-        refreshToken.setRevoked(true);
-        refreshTokenRepository.save(refreshToken);
-        return new ApiResponseDto(HttpStatus.OK.value(), "You have been logged out.");
+        if(refreshToken.isRevoked()) {
+            log.warn("Inside RefreshTokenService :: logout - Token is already revoked.");
+            return;
+        }
+        revokeRefreshToken(refreshToken);
     }
 
     public void deleteRefreshTokensByUser(User user) {

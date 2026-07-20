@@ -3,9 +3,8 @@ package com.suman.sharecare.auth.service;
 import com.suman.sharecare.auth.dto.page_dtos.ApiResponseDto;
 import com.suman.sharecare.auth.dto.user_dtos.*;
 import com.suman.sharecare.auth.entity.*;
-import com.suman.sharecare.auth.exception.ActionNotAllowedException;
-import com.suman.sharecare.auth.exception.DuplicateResourceException;
-import com.suman.sharecare.auth.exception.ResourceNotFoundException;
+import com.suman.sharecare.auth.enums.ErrorCode;
+import com.suman.sharecare.auth.exception.*;
 import com.suman.sharecare.auth.repository.PasswordResetTokenRepository;
 import com.suman.sharecare.auth.repository.UserRepository;
 import com.suman.sharecare.auth.security.jwt.JwtService;
@@ -13,7 +12,6 @@ import com.suman.sharecare.auth.util.UserMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -44,10 +41,10 @@ public class UserService {
 
     public void register(UserRegisterRequestDto userRegisterRequestDto) {
         if(userRepository.existsByUsername(userRegisterRequestDto.getUsername())) {
-            throw new DuplicateResourceException("Username already exists.");
+            throw new DuplicateResourceException(ErrorCode.USERNAME_ALREADY_EXISTS.name(), "Username already exists.");
         }
         if(userRepository.existsByEmail(userRegisterRequestDto.getEmail())) {
-            throw new DuplicateResourceException("Email already exists");
+            throw new DuplicateResourceException(ErrorCode.EMAIL_ALREADY_EXISTS.name(), "Email already exists");
         }
         User user = userMapper.toEntity(userRegisterRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -110,7 +107,7 @@ public class UserService {
             return;
         }
         if(user.isEmailVerified()) {
-            throw new ActionNotAllowedException("Email is already verified.");
+            throw new EmailVerificationException(ErrorCode.EMAIL_ALREADY_VERIFIED.name(), "Email is already verified.");
         }
         EmailVerificationToken emailVerificationToken = emailVerificationService.reuseOrGenerateToken(user);
         emailService.sendVerificationEmail(emailVerificationToken);
@@ -122,7 +119,7 @@ public class UserService {
             return;
         }
         if(!user.isEmailVerified()) {
-            throw new ActionNotAllowedException("Please verify your email id first.");
+            throw new EmailVerificationException(ErrorCode.EMAIL_NOT_VERIFIED.name(), "Please verify your email id first.");
         }
         PasswordResetToken passwordResetToken = passwordService.reuseOrGenerateToken(user);
         emailService.sendPasswordResetEmail(passwordResetToken);
@@ -130,9 +127,9 @@ public class UserService {
 
     @Transactional
     public void resetPassword(NewPasswordRequestDto newPasswordRequestDto) {
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException("Token not found"));
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordRequestDto.getToken()).orElseThrow(() -> new PasswordResetTokenInvalidException("Password reset token not found"));
         if(passwordResetToken.isUsed() || passwordResetToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new ActionNotAllowedException("The link has expired or has been used before.");
+            throw new PasswordResetTokenInvalidException("The password reset link has expired or has been used before.");
         }
         User user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getNewPassword()));

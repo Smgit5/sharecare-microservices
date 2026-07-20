@@ -38,7 +38,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDto> logout(@RequestBody RefreshTokenRequestDto tokenRequestDto) {
-        return ResponseEntity.ok(refreshTokenService.logout(tokenRequestDto));
+        refreshTokenService.logout(tokenRequestDto);
+        ApiResponseDto apiResponseDto = new ApiResponseDto(HttpStatus.OK.value(), "You have been logged out.");
+        return ResponseEntity.ok(apiResponseDto);
     }
 
     @GetMapping("/verify-email")
